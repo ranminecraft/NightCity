@@ -1,0 +1,43 @@
+EnableSaveIP: true
+EnablePlayMoney: true
+PlayMoney: 5
+PlayMoneyTestTime: 10
+SpawnMobLimit: 0.5
+SpawnerDrop: true
+EnableCommandFirstJoin: true
+RunCommandFirstJoin: "kits 新手礼包 %player%"
+EnableWelcomeFirstJoin: true
+FirstJoinMessage: "&d欢迎新同学 &c%player% &d来到夜之城!"
+EnableText: true
+JoinMessage: "&e%player%&b加入了夜之城!"
+JoinMessageVip: "&e%player%&c[传奇]&b加入了夜之城!"
+QuitMessage: "&e%player%&b离开了夜之城!"
+QuitMessageVip: "&e%player%&c[传奇]&b离开了夜之城!"
+AntiThrowEgg: true
+AntiThrowWorld: 'world'
+WorldOreProtect: true
+ProtectWorld: "sc"
+ProtectOre:
+- COAL_ORE
+- IRON_ORE
+- GOLD_ORE
+- LAPIS_ORE
+- DIAMOND_ORE
+- EMERALD_ORE
+- RESSTONE_ORE
+EnableCheck: true
+FlyCheckLimit: 3
+ClickCheckLimit: 12
+SpeedCheckLimit: 9
+KickMessage: '&c你已经被反作弊踢出\n本次踢出已被记录\n若你认为存在误判\n请加群联系管理员'
+EnableSpawnLimit: true
+SpawnLimitCount: 50
+SpawnLimitList:
+- phantom
+- ravager
+- pillager
+- zombified_piglin
+- guardian
+- villager
+McmmoFixed: true
+EnableCutomPrefix: true

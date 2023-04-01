@@ -1,0 +1,54 @@
+name: NightCity
+main: com.city.Main
+description: NightCity Forever
+author: Ranica
+version: Beta 4.3
+api-version: 1.19
+softdepend: [Vault,ProtocolLib,PlayerTitle]
+
+permissions: 
+
+  city.passcheck:
+    default: op
+    description: 'Pass check'
+
+  city.admin:
+    default: op
+    description: 'Administrator only'
+
+  city.user:
+    default: true
+    description: 'User only'
+
+  city.vip:
+    default: false
+    description: 'VIP only'
+
+  city.kit:
+    default: true
+    description: 'kit command'
+
+  city.shift:
+    default: true
+    description: 'kit command'
+
+commands:
+  city:
+    description: city
+    usage: /<command>
+
+  pm:
+    description: pm
+    usage: /<command>
+
+  spawn:
+    description: spawn
+    usage: /<command>
+
+  kit:
+    description: kit
+    usage: /<command>
+
+  dz:
+    description: dz
+    usage: /<command>

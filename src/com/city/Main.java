@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.regex.Pattern;
 
 import com.handy.playertitle.lib.util.BaseUtil;
@@ -23,8 +24,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerEggThrowEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerSwapHandItemsEvent;
 import org.bukkit.inventory.Inventory;
@@ -46,7 +49,6 @@ import org.bukkit.event.entity.EntitySpawnEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 
 import net.milkbowl.vault.economy.Economy;
-import net.milkbowl.vault.economy.EconomyResponse;
 
 public class Main extends JavaPlugin implements Listener{
 	
@@ -63,15 +65,10 @@ public class Main extends JavaPlugin implements Listener{
   	public double spawnMobLimit;
     public RegisteredServiceProvider<Economy> rsp;
   	private SignMenuFactory signMenuFactory;
-    private Map<String, Integer> pOnline = new HashMap<>();
+    private final Map<String, Integer> pOnline = new HashMap<>();
     public PlayerTitleApi plt;
 	
   	private BukkitTask task;
-	
-	public class hero {
-		int health;
-		String name;
-	}
 	
 	@Override
 	public void onDisable() {
@@ -92,37 +89,35 @@ public class Main extends JavaPlugin implements Listener{
 		Bukkit.getConsoleSender().sendMessage("§b[CityPlugin] §aPlugin loaded success.§d-By Ranica");
 		
 		//计时器
-		task = Bukkit.getScheduler().runTaskTimer(this, new Runnable() {
-        	public void run() {
-        		LocalDateTime dt = LocalDateTime.now();
-        		//重置生物过多
-         		if((dt.getHour()==23) && (dt.getMinute()==59) && (dt.getSecond()==59)) {
-         			spawndata = new YamlConfiguration();
-    				try {
-    					spawndata.save(spawnyml);
-    				} catch (IOException e) {
-    					//e.printStackTrace();
-    				}
-         		}
-        		
-        		for(Player player:Bukkit.getOnlinePlayers()) {
-        			//在线送钱
-            		if(enablePlayMoney && PlayMoneyTestTimes%60==0) {
-            			int pos = pOnline.get(player.getName())+1;
-            			pOnline.put(player.getName(), pos);
-            		}
-        		}
-        		
-        		//在线送钱
-        		if(enablePlayMoney) {
-            		PlayMoneyTestTimes++;
-            		if(PlayMoneyTestTimes>=PlayMoneyTestTime*60) {
-            			PlayMoneyTestTimes=0;
-            			say("§b[夜之城] §e你已经在线一段时间了,输入/pm领取在线奖励");
-            		}
-        		}
-        	}
-    	}, 20, 20);
+		task = Bukkit.getScheduler().runTaskTimer(this, () -> {
+			LocalDateTime dt = LocalDateTime.now();
+			//重置生物过多
+			 if((dt.getHour()==23) && (dt.getMinute()==59) && (dt.getSecond()==59)) {
+				 spawndata = new YamlConfiguration();
+				try {
+					spawndata.save(spawnyml);
+				} catch (IOException e) {
+					//e.printStackTrace();
+				}
+			 }
+
+			for(Player player:Bukkit.getOnlinePlayers()) {
+				//在线送钱
+				if(enablePlayMoney && PlayMoneyTestTimes%60==0) {
+					int pos = pOnline.get(player.getName())+1;
+					pOnline.put(player.getName(), pos);
+				}
+			}
+
+			//在线送钱
+			if(enablePlayMoney) {
+				PlayMoneyTestTimes++;
+				if(PlayMoneyTestTimes>=PlayMoneyTestTime*60) {
+					PlayMoneyTestTimes=0;
+					say("§b[夜之城] §e你已经在线一段时间了,输入/pm领取在线奖励");
+				}
+			}
+		}, 20, 20);
 		
 	}
 	
@@ -190,7 +185,7 @@ public class Main extends JavaPlugin implements Listener{
         //Vault插件
         if (Bukkit.getPluginManager().isPluginEnabled("Vault")) {
         	rsp = getServer().getServicesManager().getRegistration(Economy.class);
-            econ = rsp.getProvider();
+            econ = Objects.requireNonNull(rsp).getProvider();
             outPut("§b[CityPlugin] §a成功加载Vault插件");
         }else {
        	 	outPut("§b[CityPlugin] §c无法找到Vault插件,部分功能受限");
@@ -223,7 +218,24 @@ public class Main extends JavaPlugin implements Listener{
         //称号插件
         plt = PlayerTitleApi.getInstance();
 	}
-	
+
+	@EventHandler
+	public void onPlayerLogin(PlayerLoginEvent event) {
+		if (event.getResult() == PlayerLoginEvent.Result.KICK_FULL) {
+			Player player = event.getPlayer();
+			if (player.hasPermission("city.svip")) {
+				event.allow();
+			}
+		}
+	}
+
+	@EventHandler
+	public void onPlayerChatEvent(AsyncPlayerChatEvent event) {
+		if (event.getPlayer().hasPermission("city.svip") && event.getMessage().length() <= 40) {
+			event.setMessage(BaseUtil.replaceChatColor(event.getMessage()));
+		}
+	}
+
 	//菜单点击事件
 	@EventHandler
 	public void onInventoryClick(InventoryClickEvent event) {
@@ -255,12 +267,7 @@ public class Main extends JavaPlugin implements Listener{
 						.reopenIfFail(true)
 			            .response((p, strings) -> {
 			            	BukkitScheduler scheduler = Bukkit.getServer().getScheduler();
-							scheduler.scheduleSyncDelayedTask(this, new Runnable() {
-								@Override
-								public void run() {
-									setPrefixName(p,strings[0]);
-								}
-							},1);
+							scheduler.scheduleSyncDelayedTask(this, () -> setPrefixName(p,strings[0]),1);
 			                return true;
 			            });
 
@@ -310,7 +317,7 @@ public class Main extends JavaPlugin implements Listener{
 		if(event.getView().getTitle().contains(textReplace("&b&l夜之城&0-&e&l选择属性①"))) {
 			event.setCancelled(true);
 			
-			String name = ChatColor.stripColor(event.getCurrentItem().getItemMeta().getDisplayName());
+			String name = ChatColor.stripColor(Objects.requireNonNull(event.getCurrentItem().getItemMeta()).getDisplayName());
 			List<String> pInfoList = prefixdata.getStringList(player.getName());
 			if(pInfoList.size()==0) {
 				pInfoList = new ArrayList<>();
@@ -331,7 +338,7 @@ public class Main extends JavaPlugin implements Listener{
 		if(event.getView().getTitle().contains(textReplace("&b&l夜之城&0-&e&l选择属性②"))) {
 			event.setCancelled(true);
 			
-			String name = ChatColor.stripColor(event.getCurrentItem().getItemMeta().getDisplayName());
+			String name = ChatColor.stripColor(Objects.requireNonNull(event.getCurrentItem().getItemMeta()).getDisplayName());
 			List<String> pInfoList = prefixdata.getStringList(player.getName());
 			if(pInfoList.size()==0) {
 				pInfoList = new ArrayList<>();
@@ -353,8 +360,8 @@ public class Main extends JavaPlugin implements Listener{
 	public void addCutomItem(Inventory inventory,String name,String lore) {
 		ItemStack item = new ItemStack(Material.ENCHANTED_BOOK);
 		ItemMeta meta = item.getItemMeta();
-		meta.setDisplayName(textReplace("&b"+name));
-		ArrayList<String> Lore = new ArrayList<String>();
+		Objects.requireNonNull(meta).setDisplayName(textReplace("&b"+name));
+		ArrayList<String> Lore = new ArrayList<>();
         Lore.add(textReplace("&e"+lore));
         meta.setLore(Lore);
         item.setItemMeta(meta);
@@ -415,7 +422,7 @@ public class Main extends JavaPlugin implements Listener{
 		Inventory inventory = Bukkit.createInventory(null, 9, textReplace("&b&l夜之城&0-&e&l定制称号"));
 		ItemStack item1 = new ItemStack(Material.NETHER_STAR);
 		ItemMeta meta = item1.getItemMeta();
-        meta.setDisplayName(textReplace("&c确认购买"));
+        Objects.requireNonNull(meta).setDisplayName(textReplace("&c确认购买"));
         ArrayList<String> Lore = new ArrayList<>();
         Lore.add(textReplace("&b价格： &a30 &b元"));
         Lore.add(textReplace("&b使用扫码支付"));
@@ -426,7 +433,7 @@ public class Main extends JavaPlugin implements Listener{
          
         ItemStack item2 = new ItemStack(Material.ENCHANTED_BOOK);
         ItemMeta meta2 = item2.getItemMeta();
-        meta2.setDisplayName(textReplace("&b称号属性①"));
+        Objects.requireNonNull(meta2).setDisplayName(textReplace("&b称号属性①"));
         ArrayList<String> Lore2 = new ArrayList<>();
         Lore2.add(textReplace("&9当前选择:&e "+pInfoList.get(1).split("\\u0028")[0]));
         Lore2.add(textReplace("&9点击选择称号属性"));
@@ -435,7 +442,7 @@ public class Main extends JavaPlugin implements Listener{
         
         ItemStack item4 = new ItemStack(Material.ENCHANTED_BOOK);
         ItemMeta meta4 = item4.getItemMeta();
-        meta4.setDisplayName(textReplace("&b称号属性②"));
+        Objects.requireNonNull(meta4).setDisplayName(textReplace("&b称号属性②"));
         ArrayList<String> Lore4 = new ArrayList<>();
         Lore4.add(textReplace("&9当前选择:&e "+pInfoList.get(2).split("\\u0028")[0]));
         Lore4.add(textReplace("&9点击选择称号属性"));
@@ -444,7 +451,7 @@ public class Main extends JavaPlugin implements Listener{
         
         ItemStack item5 = new ItemStack(Material.NAME_TAG);
         ItemMeta meta5 = item5.getItemMeta();
-        meta5.setDisplayName(textReplace("&b称号名称"));
+        Objects.requireNonNull(meta5).setDisplayName(textReplace("&b称号名称"));
         ArrayList<String> Lore5 = new ArrayList<>();
         Lore5.add(BaseUtil.replaceChatColor("&9当前名称: &f["+pInfoList.get(0)+"&f]"));
         Lore5.add(textReplace("&9点击输入称号名称"));
@@ -457,12 +464,13 @@ public class Main extends JavaPlugin implements Listener{
         Lore5.add("§f&4深红->"+textReplace("&4深红")+"  §f&5紫色->"+textReplace("&5紫色"));
         Lore5.add("§f&6金色->"+textReplace("&6金色")+"  §f&7浅灰->"+textReplace("&7浅灰"));
         Lore5.add("§f&8深灰->"+textReplace("&8深灰")+"  §f&9浅蓝->"+textReplace("&9浅蓝"));
+		Lore5.add("§f&#2196f3->"+ BaseUtil.replaceChatColor("&#2196f3 支持6位RGB颜色代码"));
         meta5.setLore(Lore5);
         item5.setItemMeta(meta5);
 
         ItemStack item3 = new ItemStack(Material.GRAY_STAINED_GLASS_PANE);
         ItemMeta meta3 = item3.getItemMeta();
-        meta3.setDisplayName(textReplace("&7定制专属称号"));
+        Objects.requireNonNull(meta3).setDisplayName(textReplace("&7定制专属称号"));
         item3.setItemMeta(meta3);
         inventory.setItem(0, item3);
         inventory.setItem(2, item3);
@@ -483,19 +491,19 @@ public class Main extends JavaPlugin implements Listener{
 			EntityType et = event.getEntityType();
 			Entity en = event.getEntity();
 			List<String> spawnList = this.getConfig().getStringList("SpawnLimitList");
-			for (int i = 0; i < spawnList.size(); i++) {
-				if(spawnList.get(i).equalsIgnoreCase(et.toString())) {
-					int lx = en.getLocation().getBlockX()/100;
-					int lz = en.getLocation().getBlockZ()/100;
-					if(en.getLocation().getBlockX()<0) {
+			for (String s : spawnList) {
+				if (s.equalsIgnoreCase(et.toString())) {
+					int lx = en.getLocation().getBlockX() / 100;
+					int lz = en.getLocation().getBlockZ() / 100;
+					if (en.getLocation().getBlockX() < 0) {
 						lx--;
 					}
-					if(en.getLocation().getBlockZ()<0) {
+					if (en.getLocation().getBlockZ() < 0) {
 						lz--;
 					}
-					String info = en.getLocation().getWorld().getName()+"#"+lx+"#"+lz+"#"+et;
+					String info = Objects.requireNonNull(en.getLocation().getWorld()).getName() + "#" + lx + "#" + lz + "#" + et;
 					int ii = spawndata.getInt(info);
-					if(ii>=this.getConfig().getInt("SpawnLimitCount")) {
+					if (ii >= this.getConfig().getInt("SpawnLimitCount")) {
 						event.setCancelled(true);
 					} else {
 						ii++;
@@ -512,18 +520,7 @@ public class Main extends JavaPlugin implements Listener{
 		}
 		event.getEntity().getType();
 	}
-	
-	//执行指令
-	public void runc(String s,int i) {
-		BukkitScheduler scheduler = Bukkit.getServer().getScheduler();
-		scheduler.scheduleSyncDelayedTask(this, new Runnable() {
-			@Override
-			public void run() {
-				Bukkit.dispatchCommand(Bukkit.getConsoleSender(), s);
-			}
-		},i);
-	}
-	
+
 	//玩家加入事件
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent event){
@@ -548,9 +545,11 @@ public class Main extends JavaPlugin implements Listener{
 		
 		//玩家进入提示
 		if(this.getConfig().getBoolean("EnableText")){
-			if(p.hasPermission("city.vip")) {
+			if (p.hasPermission("city.svip")) {
+				event.setJoinMessage(textReplace(this.getConfig().getString("JoinMessageSvip"),p));
+			} else if (p.hasPermission("city.vip")) {
 				event.setJoinMessage(textReplace(this.getConfig().getString("JoinMessageVip"),p));
-			}else {
+			} else {
 				event.setJoinMessage(textReplace(this.getConfig().getString("JoinMessage"),p));
 			}
 		}
@@ -577,7 +576,7 @@ public class Main extends JavaPlugin implements Listener{
 		//保存玩家IP地址
 		if(this.getConfig().getBoolean("EnableSaveIP")){
 			List<String> ipls = ipdata.getStringList(p.getName());
-			String pip = p.getAddress().getHostString();
+			String pip = Objects.requireNonNull(p.getAddress()).getHostString();
 			if(!ipls.contains(pip)) {
 				ipls.add(pip);
 			}
@@ -592,7 +591,7 @@ public class Main extends JavaPlugin implements Listener{
 	
 	@EventHandler
 	public void onPlayerEggThrowEvent(PlayerEggThrowEvent event){
-		if(Bukkit.getWorld(this.getConfig().getString("AntiThrowWorld"))==event.getPlayer().getWorld()&&this.getConfig().getBoolean("AntiThrowEgg")) {
+		if(Bukkit.getWorld(Objects.requireNonNull(this.getConfig().getString("AntiThrowWorld")))==event.getPlayer().getWorld()&&this.getConfig().getBoolean("AntiThrowEgg")) {
 			event.setHatching(false);
 		}
     }
@@ -603,14 +602,14 @@ public class Main extends JavaPlugin implements Listener{
         //限制生存世界挖矿
         if(WorldOreProtect) {
         	if(event.getBlock().getWorld()==Bukkit.getServer().getWorld(ProtectWorld)) {
-            	for(int i=0;i<ProtectOreList.size();i++) {
-            		if(event.getBlock().getType()==Material.getMaterial(ProtectOreList.get(i))) {
-            			player.sendMessage("§b[夜之城] §c请前往资源世界挖矿");
-            			event.setExpToDrop(0);
-            			event.setDropItems(false);
-            		}
-            		
-            	}
+				for (String s : ProtectOreList) {
+					if (event.getBlock().getType() == Material.getMaterial(s)) {
+						player.sendMessage("§b[夜之城] §c请前往资源世界挖矿");
+						event.setExpToDrop(0);
+						event.setDropItems(false);
+					}
+
+				}
             }
         }
         
@@ -633,9 +632,11 @@ public class Main extends JavaPlugin implements Listener{
         
 		//玩家退出提示
 		if(this.getConfig().getBoolean("EnableText")){
-			if(p.hasPermission("city.vip")) {
+			if (p.hasPermission("city.svip")) {
+				event.setQuitMessage(textReplace(textReplace(this.getConfig().getString("QuitMessageSvip"),p)));
+			} else if (p.hasPermission("city.vip")) {
 				event.setQuitMessage(textReplace(textReplace(this.getConfig().getString("QuitMessageVip"),p)));
-			}else {
+			} else {
 				event.setQuitMessage(textReplace(textReplace(this.getConfig().getString("QuitMessage"),p)));
 			}
 		}
@@ -672,12 +673,13 @@ public class Main extends JavaPlugin implements Listener{
 	//补全指令
 	@Override
 	public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
-		String[] commands = {"info","help","reload","version"};
-		List<String> cmdls = new ArrayList<String>();
 		if (alias.equalsIgnoreCase("city") && args.length == 1) {
-			cmdls = Arrays.asList(commands);
+			return Arrays.asList("info", "help", "reload", "version");
         }
-		return cmdls;
+		if (alias.equalsIgnoreCase("city") && args.length == 2 && args[0].equals("info")) {
+			return null;
+		}
+		return new ArrayList<>();
 	}
 	
 	//指令输入
@@ -700,13 +702,14 @@ public class Main extends JavaPlugin implements Listener{
 			if (args[0].equalsIgnoreCase("help")){
 				if(sender.hasPermission("city.user")) {
 					sender.sendMessage(
-							"§e--------------------\n" +
-							"§bCityPlugin §dBy Ranica\n" +
-							"§b/pm\n" + 
-							"§b/city kit\n" + 
-							"§b/city version\n" + 
-							"§b/city reload\n" + 
-							"§e--------------------");
+							"""
+									§e--------------------
+									§bCityPlugin §dBy Ranica
+									§b/pm
+									§b/city kit
+									§b/city version
+									§b/city reload
+									§e--------------------""");
 					} else {
 						sender.sendMessage("§b[夜之城] §c你没有足够的权限执行");
 					}
@@ -738,9 +741,9 @@ public class Main extends JavaPlugin implements Listener{
 						sender.sendMessage("§b[夜之城] §c没有找到该玩家的IP地址");
 					}else {
 						sender.sendMessage("§e找到"+ipls.size()+"个"+args[1]+"使用过的IP地址");
-						for (int i = 0; i < ipls.size(); i++) {
-							sender.sendMessage(textReplace("&e- "+ipls.get(i)));
-				        }
+						for (String ipl : ipls) {
+							sender.sendMessage(textReplace("&e- " + ipl));
+						}
 					}
 				} else {
 				sender.sendMessage("§b[夜之城] §c你没有足够的权限执行");
@@ -815,16 +818,14 @@ public class Main extends JavaPlugin implements Listener{
 		}
 		
 		//以下指令不能在控制台输入
-		if (!(sender instanceof Player)) {
+		if (!(sender instanceof Player player)) {
 			outPut("§b[夜之城] §c该指令不能在控制台输入");
 			return true;
 	    }
-		
-		Player p = (Player) sender;
-		
+
 		if (cmd.getName().equalsIgnoreCase("dz") && args.length == 0) {
 			if(sender.hasPermission("city.user")&&this.getConfig().getBoolean("EnableCutomPrefix")) {
-				openDZInventory(p);
+				openDZInventory(player);
 			} else {
 				sender.sendMessage("§b[夜之城] §c你没有足够的权限执行");
 			}
@@ -833,15 +834,25 @@ public class Main extends JavaPlugin implements Listener{
 		
 		//在线送钱
 		if (cmd.getName().equalsIgnoreCase("pm")) {
-			if(sender.hasPermission("city.user")&&enablePlayMoney) {
-				int onlineTime = pOnline.get(p.getName());
+			if(sender.hasPermission("city.user") && enablePlayMoney) {
+				int onlineTime = pOnline.get(player.getName());
 				int getMoney = playMoney * onlineTime;
-				EconomyResponse pm = econ.depositPlayer(p, getMoney);
-				if(pm.transactionSuccess()) {
-					p.sendMessage("§b[夜之城] §a你在线了 §c"+onlineTime+" §a分钟,获得 §c"+getMoney+" §a金币");
-					pOnline.put(p.getName(),0);
+				int reward;
+				String text = "";
+				if (player.hasPermission("city.vip")) {
+					reward = (int) (0.5 * playMoney);
+					text = "§c[VIP额外获得" + reward + "]";
+					econ.depositPlayer(player, reward);
+				} else if (player.hasPermission("city.svip")) {
+					reward = playMoney;
+					text = "§6[SVIP额外获得" + reward + "]";
+					econ.depositPlayer(player, reward);
+				}
+				if (econ.depositPlayer(player, getMoney).transactionSuccess()) {
+					player.sendMessage("§b[夜之城] §a你在线了§c" + onlineTime + "§a分钟,获得§c" + getMoney + "§a金币" + text);
+					pOnline.put(player.getName(),0);
 				}else {
-					p.sendMessage("§b[夜之城] §c在线奖励领取失败,请联系管理员");
+					player.sendMessage("§b[夜之城] §c在线奖励领取失败,请联系管理员");
 				}
 				
 			} else {
@@ -853,7 +864,7 @@ public class Main extends JavaPlugin implements Listener{
 		//回城
 		if (cmd.getName().equalsIgnoreCase("spawn")) {
 			if(sender.hasPermission("city.user")) {
-				p.chat("/res tp spawn");
+				player.chat("/res tp spawn");
 				
 			} else {
 				sender.sendMessage("§b[夜之城] §c你没有足够的权限执行");

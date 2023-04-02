@@ -2,7 +2,7 @@ name: NightCity
 main: com.city.Main
 description: NightCity Forever
 author: Ranica
-version: Beta 4.3
+version: Beta 4.5
 api-version: 1.19
 softdepend: [Vault,ProtocolLib,PlayerTitle]
 
@@ -23,6 +23,10 @@ permissions:
   city.vip:
     default: false
     description: 'VIP only'
+
+  city.svip:
+    default: false
+    description: 'SVIP only'
 
   city.kit:
     default: true

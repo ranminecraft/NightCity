@@ -10,9 +10,11 @@ EnableWelcomeFirstJoin: true
 FirstJoinMessage: "&d欢迎新同学 &c%player% &d来到夜之城!"
 EnableText: true
 JoinMessage: "&e%player%&b加入了夜之城!"
-JoinMessageVip: "&e%player%&c[传奇]&b加入了夜之城!"
+JoinMessageVip: "&e%player%&c[VIP]&b加入了夜之城!"
+JoinMessageSvip: "&e%player%&6[SVIP]&b加入了夜之城!"
 QuitMessage: "&e%player%&b离开了夜之城!"
-QuitMessageVip: "&e%player%&c[传奇]&b离开了夜之城!"
+QuitMessageVip: "&e%player%&c[VIP]&b离开了夜之城!"
+QuitMessageSvip: "&e%player%&6[SVIP]&b离开了夜之城!"
 AntiThrowEgg: true
 AntiThrowWorld: 'world'
 WorldOreProtect: true

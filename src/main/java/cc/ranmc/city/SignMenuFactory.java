@@ -1,4 +1,5 @@
-package com.city;
+package cc.ranmc.city;
+
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.PacketAdapter;
@@ -14,7 +15,6 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -104,7 +104,7 @@ public final class SignMenuFactory {
             this.position = new BlockPosition(location.getBlockX(), location.getBlockY() + (255 - location.getBlockY()), location.getBlockZ());
 
             player.sendBlockChange(this.position.toLocation(location.getWorld()), Material.OAK_SIGN.createBlockData());
-            player.sendSignChange(this.position.toLocation(location.getWorld()), this.text.stream().toArray(String[]::new));
+            player.sendSignChange(this.position.toLocation(location.getWorld()), this.text.toArray(String[]::new));
 
             PacketContainer openSign = ProtocolLibrary.getProtocolManager().createPacket(PacketType.Play.Server.OPEN_SIGN_EDITOR);
             PacketContainer signData = ProtocolLibrary.getProtocolManager().createPacket(PacketType.Play.Server.TILE_ENTITY_DATA);
@@ -125,12 +125,8 @@ public final class SignMenuFactory {
             signData.getBlockPositionModifier().write(0, this.position);
             signData.getNbtModifier().write(0, signNBT);
 
-            try {
-                ProtocolLibrary.getProtocolManager().sendServerPacket(player, signData);
-                ProtocolLibrary.getProtocolManager().sendServerPacket(player, openSign);
-            } catch (InvocationTargetException exception) {
-                exception.printStackTrace();
-            }
+            ProtocolLibrary.getProtocolManager().sendServerPacket(player, signData);
+            ProtocolLibrary.getProtocolManager().sendServerPacket(player, openSign);
             inputs.put(player, this);
         }
 

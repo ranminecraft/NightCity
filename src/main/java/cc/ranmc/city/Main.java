@@ -1,4 +1,4 @@
-package com.city;
+package cc.ranmc.city;
 
 import java.io.File;
 import java.io.IOException;
@@ -79,19 +79,19 @@ public class Main extends JavaPlugin implements Listener{
 	@Override
 	public void onEnable(){
 		
-		//注册Event
+		// 注册Event
 		Bukkit.getPluginManager().registerEvents(this, this);
 		
-		//加载配置文件
+		// 加载配置文件
 		loadConfig();
 		
-		//输出成功启动
+		// 输出成功启动
 		Bukkit.getConsoleSender().sendMessage("§b[CityPlugin] §aPlugin loaded success.§d-By Ranica");
 		
-		//计时器
+		// 计时器
 		task = Bukkit.getScheduler().runTaskTimer(this, () -> {
 			LocalDateTime dt = LocalDateTime.now();
-			//重置生物过多
+			// 重置生物过多
 			 if((dt.getHour()==23) && (dt.getMinute()==59) && (dt.getSecond()==59)) {
 				 spawndata = new YamlConfiguration();
 				try {
@@ -102,34 +102,34 @@ public class Main extends JavaPlugin implements Listener{
 			 }
 
 			for(Player player:Bukkit.getOnlinePlayers()) {
-				//在线送钱
+				// 在线送钱
 				if(enablePlayMoney && PlayMoneyTestTimes%60==0) {
 					int pos = pOnline.get(player.getName())+1;
 					pOnline.put(player.getName(), pos);
 				}
 			}
 
-			//在线送钱
+			// 在线送钱
 			if(enablePlayMoney) {
 				PlayMoneyTestTimes++;
 				if(PlayMoneyTestTimes>=PlayMoneyTestTime*60) {
 					PlayMoneyTestTimes=0;
-					say("§b[夜之城] §e你已经在线一段时间了,输入/pm领取在线奖励");
+					say("§b[夜城] §e你已经在线一段时间了,输入/pm领取在线奖励");
 				}
 			}
 		}, 20, 20);
 		
 	}
 	
-	//加载配置文件
+	// 加载配置文件
 	public void loadConfig() {
-		//检查配置文件
+		// 检查配置文件
 		if (!new File(getDataFolder() + File.separator + "config.yml").exists()) {
 			saveDefaultConfig();
 		}
 		reloadConfig();
 		
-		//加载第一次进入信息
+		// 加载第一次进入信息
 		firstyml = new File(this.getDataFolder(), "first.yml");
 		if(!firstyml.exists()) {
 			this.saveResource("first.yml", true);
@@ -137,7 +137,7 @@ public class Main extends JavaPlugin implements Listener{
 		
 		firstdata = YamlConfiguration.loadConfiguration(firstyml);
 		
-		//加载IP地址
+		// 加载IP地址
 		ipyml = new File(this.getDataFolder(), "ip.yml");
 		if(!ipyml.exists()) {
 			this.saveResource("ip.yml", true);
@@ -145,7 +145,7 @@ public class Main extends JavaPlugin implements Listener{
 		
 		ipdata = YamlConfiguration.loadConfiguration(ipyml);
         
-		//加载踢出记录
+		// 加载踢出记录
 		kickyml = new File(this.getDataFolder(), "kick.yml");
 		if(!kickyml.exists()) {
 			this.saveResource("kick.yml", true);
@@ -153,7 +153,7 @@ public class Main extends JavaPlugin implements Listener{
 		
 		kickdata = YamlConfiguration.loadConfiguration(kickyml);
 		
-		//限制生物过多
+		// 限制生物过多
 		spawnyml = new File(this.getDataFolder(), "spawn.yml");
 		if(!spawnyml.exists()) {
 			this.saveResource("spawn.yml", true);
@@ -182,7 +182,7 @@ public class Main extends JavaPlugin implements Listener{
 		
 		prefixdata = YamlConfiguration.loadConfiguration(prefixyml);
 		
-        //Vault插件
+        // Vault插件
         if (Bukkit.getPluginManager().isPluginEnabled("Vault")) {
         	rsp = getServer().getServicesManager().getRegistration(Economy.class);
             econ = Objects.requireNonNull(rsp).getProvider();
@@ -191,14 +191,14 @@ public class Main extends JavaPlugin implements Listener{
        	 	outPut("§b[CityPlugin] §c无法找到Vault插件,部分功能受限");
         }
         
-        //加载ProtocolLib
+        // 加载ProtocolLib
         if (Bukkit.getPluginManager().isPluginEnabled("ProtocolLib")) {
        	 	outPut(textReplace("§b[CityPlugin] &a成功加载ProtocolLib"));
        	 	this.signMenuFactory = new SignMenuFactory(this);
         } else {
        	 	outPut(textReplace("§b[CityPlugin] &c无法找到ProtocolLib"));
         }
-        
+
         //在线送钱
         playMoney = this.getConfig().getInt("PlayMoney");
         enablePlayMoney = this.getConfig().getBoolean("EnablePlayMoney");
@@ -246,7 +246,7 @@ public class Main extends JavaPlugin implements Listener{
 			return;
 		}
 		
-		if(event.getView().getTitle().contains(textReplace("&b&l夜之城&0-&e&l定制称号"))) {
+		if(event.getView().getTitle().contains(textReplace("&b&l夜城&0-&e&l定制称号"))) {
 			//取消点击
 			event.setCancelled(true);
 			
@@ -276,7 +276,7 @@ public class Main extends JavaPlugin implements Listener{
 			
 			if (event.getRawSlot()==3&&clicked.getType()==Material.ENCHANTED_BOOK) {
 				
-				Inventory inventory = Bukkit.createInventory(null, 18, textReplace("&b&l夜之城&0-&e&l选择属性①"));
+				Inventory inventory = Bukkit.createInventory(null, 18, textReplace("&b&l夜城&0-&e&l选择属性①"));
 				addCutomItem(inventory, "&b发光&f(GLOWING)" , "高亮显示玩家");
 				addCutomItem(inventory, "&b跳跃提升&f&f(JUMP)", "让你跳的更高");
 				addCutomItem(inventory, "&b饱和&f&f(SATURATION)", "不断恢复饱和");
@@ -295,7 +295,7 @@ public class Main extends JavaPlugin implements Listener{
 			
 			if (event.getRawSlot()==5&&clicked.getType()==Material.ENCHANTED_BOOK) {
 				
-				Inventory inventory = Bukkit.createInventory(null, 18, textReplace("&b&l夜之城&0-&e&l选择属性②"));
+				Inventory inventory = Bukkit.createInventory(null, 18, textReplace("&b&l夜城&0-&e&l选择属性②"));
 				addCutomItem(inventory, "&b发光&f(GLOWING)" , "高亮显示玩家");
 				addCutomItem(inventory, "&b跳跃提升&f&f(JUMP)", "让你跳的更高");
 				addCutomItem(inventory, "&b饱和&f&f(SATURATION)", "不断恢复饱和");
@@ -314,7 +314,7 @@ public class Main extends JavaPlugin implements Listener{
 			
 		}
 		
-		if(event.getView().getTitle().contains(textReplace("&b&l夜之城&0-&e&l选择属性①"))) {
+		if(event.getView().getTitle().contains(textReplace("&b&l夜城&0-&e&l选择属性①"))) {
 			event.setCancelled(true);
 			
 			String name = ChatColor.stripColor(Objects.requireNonNull(event.getCurrentItem().getItemMeta()).getDisplayName());
@@ -335,7 +335,7 @@ public class Main extends JavaPlugin implements Listener{
 			openDZInventory(player);
 		}
 		
-		if(event.getView().getTitle().contains(textReplace("&b&l夜之城&0-&e&l选择属性②"))) {
+		if(event.getView().getTitle().contains(textReplace("&b&l夜城&0-&e&l选择属性②"))) {
 			event.setCancelled(true);
 			
 			String name = ChatColor.stripColor(Objects.requireNonNull(event.getCurrentItem().getItemMeta()).getDisplayName());
@@ -395,7 +395,7 @@ public class Main extends JavaPlugin implements Listener{
 				.replace("&n", "")
 				.replace("&o", "")
 				.replace("&r", "");
-		Pattern pattern = Pattern.compile("^[\u4e00-\u9fa5]{2,4}$");
+		Pattern pattern = Pattern.compile("^[一-\u9fa5]{2,4}$");
 		if(pattern.matcher(clearColor(textReplace(name))).matches()) {
 			pInfoList.set(0, name);
 			prefixdata.set(p.getName(), pInfoList);
@@ -405,7 +405,7 @@ public class Main extends JavaPlugin implements Listener{
 				//e.printStackTrace();
 			}
 		} else {
-			p.sendMessage(textReplace("§b[夜之城] &c名称不规范,由2~4位中文组成"));
+			p.sendMessage(textReplace("§b[夜城] &c名称不规范,由2~4位中文组成"));
 		}
 		openDZInventory(p);
 	}
@@ -419,7 +419,7 @@ public class Main extends JavaPlugin implements Listener{
 			pInfoList.add("饱和(SATURATION)");
 		}
 		
-		Inventory inventory = Bukkit.createInventory(null, 9, textReplace("&b&l夜之城&0-&e&l定制称号"));
+		Inventory inventory = Bukkit.createInventory(null, 9, textReplace("&b&l夜城&0-&e&l定制称号"));
 		ItemStack item1 = new ItemStack(Material.NETHER_STAR);
 		ItemMeta meta = item1.getItemMeta();
         Objects.requireNonNull(meta).setDisplayName(textReplace("&c确认购买"));
@@ -555,7 +555,7 @@ public class Main extends JavaPlugin implements Listener{
 		}
 		
 		if(firstdata.getString(p.getName())==null) {
-			firstdata.set(""+p.getName(), 1);
+			firstdata.set(p.getName(), 1);
 			//首次进入欢迎语
 			if(this.getConfig().getBoolean("EnableWelcomeFirstJoin")) {
 				say(textReplace(this.getConfig().getString("FirstJoinMessage"),p));
@@ -604,7 +604,7 @@ public class Main extends JavaPlugin implements Listener{
         	if(event.getBlock().getWorld()==Bukkit.getServer().getWorld(ProtectWorld)) {
 				for (String s : ProtectOreList) {
 					if (event.getBlock().getType() == Material.getMaterial(s)) {
-						player.sendMessage("§b[夜之城] §c请前往资源世界挖矿");
+						player.sendMessage("§b[夜城] §c请前往资源世界挖矿");
 						event.setExpToDrop(0);
 						event.setDropItems(false);
 					}
@@ -693,7 +693,7 @@ public class Main extends JavaPlugin implements Listener{
 					loadConfig();
 					sender.sendMessage("§b[CityPlugin] §aReload complete");
 				} else {
-					sender.sendMessage("§b[夜之城] §c你没有足够的权限执行");
+					sender.sendMessage("§b[夜城] §c你没有足够的权限执行");
 				}
 				return true;
 			}
@@ -711,7 +711,7 @@ public class Main extends JavaPlugin implements Listener{
 									§b/city reload
 									§e--------------------""");
 					} else {
-						sender.sendMessage("§b[夜之城] §c你没有足够的权限执行");
+						sender.sendMessage("§b[夜城] §c你没有足够的权限执行");
 					}
 				return true;
 			}
@@ -725,7 +725,7 @@ public class Main extends JavaPlugin implements Listener{
 							"\n§bVersion: "+getDescription().getVersion() +
 							"\n§chttp://www.xyfcm.top\n§e--------------------");
 					} else {
-						sender.sendMessage("§b[夜之城] §c你没有足够的权限执行");
+						sender.sendMessage("§b[夜城] §c你没有足够的权限执行");
 					}
 				return true;
 			}
@@ -738,7 +738,7 @@ public class Main extends JavaPlugin implements Listener{
 				if(sender.hasPermission("city.admin")) {
 					List<String> ipls = ipdata.getStringList(args[1]);
 					if(ipls.size() == 0) {
-						sender.sendMessage("§b[夜之城] §c没有找到该玩家的IP地址");
+						sender.sendMessage("§b[夜城] §c没有找到该玩家的IP地址");
 					}else {
 						sender.sendMessage("§e找到"+ipls.size()+"个"+args[1]+"使用过的IP地址");
 						for (String ipl : ipls) {
@@ -746,7 +746,7 @@ public class Main extends JavaPlugin implements Listener{
 						}
 					}
 				} else {
-				sender.sendMessage("§b[夜之城] §c你没有足够的权限执行");
+				sender.sendMessage("§b[夜城] §c你没有足够的权限执行");
 				}
 			return true;
 			}
@@ -756,7 +756,7 @@ public class Main extends JavaPlugin implements Listener{
 			if(sender.hasPermission("city.admin")&&this.getConfig().getBoolean("EnableCutomPrefix")) {
 				Player player = Bukkit.getPlayer(args[0]);
 				if(player==null) {
-					sender.sendMessage("§b[夜之城] 该玩家不在线");
+					sender.sendMessage("§b[夜城] 该玩家不在线");
 					return true;
 				}
 				List<String> pInfoList = prefixdata.getStringList(player.getName());
@@ -809,17 +809,17 @@ public class Main extends JavaPlugin implements Listener{
 				}
 				titleListParam.setTitleBuffs(titleBuffs);
 				plt.set(player.getName(), plt.add(titleListParam), 0);
-				player.sendMessage("§b[夜之城] §a定制称号已发往你的仓库");
-				sender.sendMessage("§b[夜之城] §a已经成功发放定制称号");
+				player.sendMessage("§b[夜城] §a定制称号已发往你的仓库");
+				sender.sendMessage("§b[夜城] §a已经成功发放定制称号");
 			} else {
-				sender.sendMessage("§b[夜之城] §c你没有足够的权限执行");
+				sender.sendMessage("§b[夜城] §c你没有足够的权限执行");
 			}
 			return true;
 		}
 		
 		//以下指令不能在控制台输入
 		if (!(sender instanceof Player player)) {
-			outPut("§b[夜之城] §c该指令不能在控制台输入");
+			outPut("§b[夜城] §c该指令不能在控制台输入");
 			return true;
 	    }
 
@@ -827,7 +827,7 @@ public class Main extends JavaPlugin implements Listener{
 			if(sender.hasPermission("city.user")&&this.getConfig().getBoolean("EnableCutomPrefix")) {
 				openDZInventory(player);
 			} else {
-				sender.sendMessage("§b[夜之城] §c你没有足够的权限执行");
+				sender.sendMessage("§b[夜城] §c你没有足够的权限执行");
 			}
 			return true;
 		}
@@ -849,14 +849,14 @@ public class Main extends JavaPlugin implements Listener{
 					econ.depositPlayer(player, reward);
 				}
 				if (econ.depositPlayer(player, getMoney).transactionSuccess()) {
-					player.sendMessage("§b[夜之城] §a你在线了§c" + onlineTime + "§a分钟,获得§c" + getMoney + "§a金币" + text);
+					player.sendMessage("§b[夜城] §a你在线了§c" + onlineTime + "§a分钟,获得§c" + getMoney + "§a金币" + text);
 					pOnline.put(player.getName(),0);
 				}else {
-					player.sendMessage("§b[夜之城] §c在线奖励领取失败,请联系管理员");
+					player.sendMessage("§b[夜城] §c在线奖励领取失败,请联系管理员");
 				}
 				
 			} else {
-				sender.sendMessage("§b[夜之城] §c你没有足够的权限执行");
+				sender.sendMessage("§b[夜城] §c你没有足够的权限执行");
 			}
 			return true;
 		}
@@ -867,12 +867,12 @@ public class Main extends JavaPlugin implements Listener{
 				player.chat("/res tp spawn");
 				
 			} else {
-				sender.sendMessage("§b[夜之城] §c你没有足够的权限执行");
+				sender.sendMessage("§b[夜城] §c你没有足够的权限执行");
 			}
 			return true;
 		}
 		
-		sender.sendMessage("§b[夜之城] §c未知指令,请检查后重新输入");
+		sender.sendMessage("§b[夜城] §c未知指令,请检查后重新输入");
 		return true;
 		
 	}
@@ -905,9 +905,9 @@ public class Main extends JavaPlugin implements Listener{
 			}else {
 				text=text.replace("&", "§")
 					.replace("%player%",p.getName())
-					.replace("%player_x%",""+p.getLocation().getBlockX())
-					.replace("%player_y%",""+p.getLocation().getBlockY())
-					.replace("%player_z%",""+p.getLocation().getBlockZ());
+					.replace("%player_x%", String.valueOf(p.getLocation().getBlockX()))
+					.replace("%player_y%", String.valueOf(p.getLocation().getBlockY()))
+					.replace("%player_z%", String.valueOf(p.getLocation().getBlockZ()));
 			}
 		return text;
 	}

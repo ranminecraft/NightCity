@@ -9,11 +9,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.regex.Pattern;
 
-import com.handy.playertitle.lib.util.BaseUtil;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -30,30 +27,21 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerSwapHandItemsEvent;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.scheduler.BukkitTask;
-
-import com.handy.playertitle.api.PlayerTitleApi;
-import com.handy.playertitle.api.param.PotionEffectParam;
-import com.handy.playertitle.api.param.TitleBuffParam;
-import com.handy.playertitle.api.param.TitleListParam;
-import com.handy.playertitle.constants.BuffTypeEnum;
 
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntitySpawnEvent;
-import org.bukkit.event.inventory.InventoryClickEvent;
 
 import net.milkbowl.vault.economy.Economy;
+import org.jetbrains.annotations.NotNull;
 
 public class Main extends JavaPlugin implements Listener{
 	
-	public YamlConfiguration firstdata,ipdata,kickdata,spawndata,kitdata,kitlogdata,prefixdata;
-	public File firstyml,ipyml,kickyml,spawnyml,kityml,kitlogyml,prefixyml;
+	public YamlConfiguration firstdata,ipdata,kickdata,spawndata,kitdata,kitlogdata;
+	public File firstyml,ipyml,kickyml,spawnyml,kityml,kitlogyml;
 	
 	public Boolean WorldOreProtect,SpawnerDrop;
     public String ProtectWorld;
@@ -64,9 +52,7 @@ public class Main extends JavaPlugin implements Listener{
   	private static Economy econ;
   	public double spawnMobLimit;
     public RegisteredServiceProvider<Economy> rsp;
-  	private SignMenuFactory signMenuFactory;
     private final Map<String, Integer> pOnline = new HashMap<>();
-    public PlayerTitleApi plt;
 	
   	private BukkitTask task;
 	
@@ -175,13 +161,6 @@ public class Main extends JavaPlugin implements Listener{
 		
 		kitlogdata = YamlConfiguration.loadConfiguration(kitlogyml);
 		
-		prefixyml = new File(this.getDataFolder(), "prefix.yml");
-		if(!prefixyml.exists()) {
-			this.saveResource("prefix.yml", true);
-		}
-		
-		prefixdata = YamlConfiguration.loadConfiguration(prefixyml);
-		
         // Vault插件
         if (Bukkit.getPluginManager().isPluginEnabled("Vault")) {
         	rsp = getServer().getServicesManager().getRegistration(Economy.class);
@@ -189,14 +168,6 @@ public class Main extends JavaPlugin implements Listener{
             outPut("§b[CityPlugin] §a成功加载Vault插件");
         }else {
        	 	outPut("§b[CityPlugin] §c无法找到Vault插件,部分功能受限");
-        }
-        
-        // 加载ProtocolLib
-        if (Bukkit.getPluginManager().isPluginEnabled("ProtocolLib")) {
-       	 	outPut(textReplace("§b[CityPlugin] &a成功加载ProtocolLib"));
-       	 	this.signMenuFactory = new SignMenuFactory(this);
-        } else {
-       	 	outPut(textReplace("§b[CityPlugin] &c无法找到ProtocolLib"));
         }
 
         //在线送钱
@@ -214,9 +185,6 @@ public class Main extends JavaPlugin implements Listener{
         WorldOreProtect = this.getConfig().getBoolean("WorldOreProtect");
         ProtectWorld = this.getConfig().getString("ProtectWorld");
         ProtectOreList = this.getConfig().getStringList("ProtectOre");
-        
-        //称号插件
-        plt = PlayerTitleApi.getInstance();
 	}
 
 	@EventHandler
@@ -232,256 +200,8 @@ public class Main extends JavaPlugin implements Listener{
 	@EventHandler
 	public void onPlayerChatEvent(AsyncPlayerChatEvent event) {
 		if (event.getPlayer().hasPermission("city.svip") && event.getMessage().length() <= 40) {
-			event.setMessage(BaseUtil.replaceChatColor(event.getMessage()));
+			event.setMessage(textReplace(event.getMessage()));
 		}
-	}
-
-	//菜单点击事件
-	@EventHandler
-	public void onInventoryClick(InventoryClickEvent event) {
-		
-		Player player = (Player) event.getWhoClicked();
-		ItemStack clicked = event.getCurrentItem();
-		if(clicked==null) {
-			return;
-		}
-		
-		if(event.getView().getTitle().contains(textReplace("&b&l夜城&0-&e&l定制称号"))) {
-			//取消点击
-			event.setCancelled(true);
-			
-			if (event.getRawSlot()==7&&clicked.getType()==Material.NETHER_STAR) {
-				List<String> pInfoList = prefixdata.getStringList(player.getName());
-				if(pInfoList.size()==0) {
-					pInfoList = new ArrayList<>();
-					pInfoList.add("鸽子");
-					pInfoList.add("力量(INCREASE_DAMAGE)");
-					pInfoList.add("饱和(SATURATION)");
-				}
-				player.chat("/minepay buy 定制称号");
-				//player.closeInventory();
-			}
-			
-			if (event.getRawSlot()==1&&clicked.getType()==Material.NAME_TAG) {
-				SignMenuFactory.Menu menu = signMenuFactory.newMenu(Arrays.asList("鸽子","","",""))
-						.reopenIfFail(true)
-			            .response((p, strings) -> {
-			            	BukkitScheduler scheduler = Bukkit.getServer().getScheduler();
-							scheduler.scheduleSyncDelayedTask(this, () -> setPrefixName(p,strings[0]),1);
-			                return true;
-			            });
-
-			    menu.open(player);
-			}
-			
-			if (event.getRawSlot()==3&&clicked.getType()==Material.ENCHANTED_BOOK) {
-				
-				Inventory inventory = Bukkit.createInventory(null, 18, textReplace("&b&l夜城&0-&e&l选择属性①"));
-				addCutomItem(inventory, "&b发光&f(GLOWING)" , "高亮显示玩家");
-				addCutomItem(inventory, "&b跳跃提升&f&f(JUMP)", "让你跳的更高");
-				addCutomItem(inventory, "&b饱和&f&f(SATURATION)", "不断恢复饱和");
-				addCutomItem(inventory, "&b抗性提升&f(DAMAGE_RESISTANCE)", "减少受到伤害");
-				addCutomItem(inventory, "&b防火&f(FIRE_RESISTANCE)", "免疫火焰伤害");
-				addCutomItem(inventory, "&b力量&f(INCREASE_DAMAGE)", "造成更高伤害");
-				addCutomItem(inventory, "&b急迫&f(FAST_DIGGING)", "提升挖掘速度");
-				addCutomItem(inventory, "&b幸运&f(LUCK)", "提高掉落物奖励及钓鱼收益");
-				addCutomItem(inventory, "&b生命恢复&f(REGENERATION)", "不断恢复生命");
-				addCutomItem(inventory, "&b伤害吸收&f(ABSORPTION)", "吸收受到伤害");
-				addCutomItem(inventory, "&b海豚的恩惠&f(DOLPHINS_GRACE)", "水下游得更快");
-				addCutomItem(inventory, "&b潮涌能量&f(CONDUIT_POWER)", "在水下获得呼吸、夜视、速掘加成");
-				addCutomItem(inventory, "&b村庄英雄&f(HERO_OF_THE_VILLAGE)", "村民交易时候享受折扣或赠送礼物");
-				player.openInventory(inventory);
-			}
-			
-			if (event.getRawSlot()==5&&clicked.getType()==Material.ENCHANTED_BOOK) {
-				
-				Inventory inventory = Bukkit.createInventory(null, 18, textReplace("&b&l夜城&0-&e&l选择属性②"));
-				addCutomItem(inventory, "&b发光&f(GLOWING)" , "高亮显示玩家");
-				addCutomItem(inventory, "&b跳跃提升&f&f(JUMP)", "让你跳的更高");
-				addCutomItem(inventory, "&b饱和&f&f(SATURATION)", "不断恢复饱和");
-				addCutomItem(inventory, "&b抗性提升&f(DAMAGE_RESISTANCE)", "减少受到伤害");
-				addCutomItem(inventory, "&b防火&f(FIRE_RESISTANCE)", "免疫火焰伤害");
-				addCutomItem(inventory, "&b力量&f(INCREASE_DAMAGE)", "造成更高伤害");
-				addCutomItem(inventory, "&b急迫&f(FAST_DIGGING)", "提升挖掘速度");
-				addCutomItem(inventory, "&b幸运&f(LUCK)", "提高掉落物奖励及钓鱼收益");
-				addCutomItem(inventory, "&b生命恢复&f(REGENERATION)", "不断恢复生命");
-				addCutomItem(inventory, "&b伤害吸收&f(ABSORPTION)", "吸收受到伤害");
-				addCutomItem(inventory, "&b海豚的恩惠&f(DOLPHINS_GRACE)", "水下游得更快");
-				addCutomItem(inventory, "&b潮涌能量&f(CONDUIT_POWER)", "在水下获得呼吸、夜视、速掘加成");
-				addCutomItem(inventory, "&b村庄英雄&f(HERO_OF_THE_VILLAGE)", "村民交易时候享受折扣或赠送礼物");
-				player.openInventory(inventory);
-			}
-			
-		}
-		
-		if(event.getView().getTitle().contains(textReplace("&b&l夜城&0-&e&l选择属性①"))) {
-			event.setCancelled(true);
-			
-			String name = ChatColor.stripColor(Objects.requireNonNull(event.getCurrentItem().getItemMeta()).getDisplayName());
-			List<String> pInfoList = prefixdata.getStringList(player.getName());
-			if(pInfoList.size()==0) {
-				pInfoList = new ArrayList<>();
-				pInfoList.add("鸽子");
-				pInfoList.add("力量(INCREASE_DAMAGE)");
-				pInfoList.add("饱和(SATURATION)");
-			}
-			pInfoList.set(1, name);
-			prefixdata.set(player.getName(), pInfoList);
-			try {
-				prefixdata.save(prefixyml);
-			} catch (IOException e) {
-				//e.printStackTrace();
-			}
-			openDZInventory(player);
-		}
-		
-		if(event.getView().getTitle().contains(textReplace("&b&l夜城&0-&e&l选择属性②"))) {
-			event.setCancelled(true);
-			
-			String name = ChatColor.stripColor(Objects.requireNonNull(event.getCurrentItem().getItemMeta()).getDisplayName());
-			List<String> pInfoList = prefixdata.getStringList(player.getName());
-			if(pInfoList.size()==0) {
-				pInfoList = new ArrayList<>();
-				pInfoList.add("鸽子");
-				pInfoList.add("力量(INCREASE_DAMAGE)");
-				pInfoList.add("饱和(SATURATION)");
-			}
-			pInfoList.set(2, name);
-			prefixdata.set(player.getName(), pInfoList);
-			try {
-				prefixdata.save(prefixyml);
-			} catch (IOException e) {
-				//e.printStackTrace();
-			}
-			openDZInventory(player);
-		}
-	}
-	
-	public void addCutomItem(Inventory inventory,String name,String lore) {
-		ItemStack item = new ItemStack(Material.ENCHANTED_BOOK);
-		ItemMeta meta = item.getItemMeta();
-		Objects.requireNonNull(meta).setDisplayName(textReplace("&b"+name));
-		ArrayList<String> Lore = new ArrayList<>();
-        Lore.add(textReplace("&e"+lore));
-        meta.setLore(Lore);
-        item.setItemMeta(meta);
-		inventory.addItem(item);
-	}
-
-	public static String clearColor(String text) {
-		text = ChatColor.stripColor(textReplace(text));
-		if (text.contains("#")) {
-			text = Pattern.compile("(?i)#[A-Za-z0-9]{6}")
-					.matcher(text)
-					.replaceAll("")
-					.replace("§", "");
-		}
-		return text;
-	}
-
-	public void setPrefixName(Player p,String name) {
-		
-		List<String> pInfoList = prefixdata.getStringList(p.getName());
-		if(pInfoList.size() == 0) {
-			pInfoList = new ArrayList<>();
-			pInfoList.add("鸽子");
-			pInfoList.add("力量(INCREASE_DAMAGE)");
-			pInfoList.add("饱和(SATURATION)");
-		}
-		name = name.replace(" ", "")
-				.replace("&k", "")
-				.replace("&l", "")
-				.replace("&m", "")
-				.replace("&n", "")
-				.replace("&o", "")
-				.replace("&r", "");
-		Pattern pattern = Pattern.compile("^[一-\u9fa5]{2,4}$");
-		if(pattern.matcher(clearColor(textReplace(name))).matches()) {
-			pInfoList.set(0, name);
-			prefixdata.set(p.getName(), pInfoList);
-			try {
-				prefixdata.save(prefixyml);
-			} catch (IOException e) {
-				//e.printStackTrace();
-			}
-		} else {
-			p.sendMessage(textReplace("§b[夜城] &c名称不规范,由2~4位中文组成"));
-		}
-		openDZInventory(p);
-	}
-	
-	public void openDZInventory(Player p) {
-		List<String> pInfoList = prefixdata.getStringList(p.getName());
-		if(pInfoList.size()==0) {
-			pInfoList = new ArrayList<>();
-			pInfoList.add("鸽子");
-			pInfoList.add("力量(INCREASE_DAMAGE)");
-			pInfoList.add("饱和(SATURATION)");
-		}
-		
-		Inventory inventory = Bukkit.createInventory(null, 9, textReplace("&b&l夜城&0-&e&l定制称号"));
-		ItemStack item1 = new ItemStack(Material.NETHER_STAR);
-		ItemMeta meta = item1.getItemMeta();
-        Objects.requireNonNull(meta).setDisplayName(textReplace("&c确认购买"));
-        ArrayList<String> Lore = new ArrayList<>();
-        Lore.add(textReplace("&b价格： &a30 &b元"));
-        Lore.add(textReplace("&b使用扫码支付"));
-        Lore.add(textReplace("&b点击充值获得"));
-        Lore.add(textReplace("&e购买期限：永久使用"));
-        meta.setLore(Lore);
-        item1.setItemMeta(meta);
-         
-        ItemStack item2 = new ItemStack(Material.ENCHANTED_BOOK);
-        ItemMeta meta2 = item2.getItemMeta();
-        Objects.requireNonNull(meta2).setDisplayName(textReplace("&b称号属性①"));
-        ArrayList<String> Lore2 = new ArrayList<>();
-        Lore2.add(textReplace("&9当前选择:&e "+pInfoList.get(1).split("\\u0028")[0]));
-        Lore2.add(textReplace("&9点击选择称号属性"));
-        meta2.setLore(Lore2);
-        item2.setItemMeta(meta2);
-        
-        ItemStack item4 = new ItemStack(Material.ENCHANTED_BOOK);
-        ItemMeta meta4 = item4.getItemMeta();
-        Objects.requireNonNull(meta4).setDisplayName(textReplace("&b称号属性②"));
-        ArrayList<String> Lore4 = new ArrayList<>();
-        Lore4.add(textReplace("&9当前选择:&e "+pInfoList.get(2).split("\\u0028")[0]));
-        Lore4.add(textReplace("&9点击选择称号属性"));
-        meta4.setLore(Lore4);
-        item4.setItemMeta(meta4);
-        
-        ItemStack item5 = new ItemStack(Material.NAME_TAG);
-        ItemMeta meta5 = item5.getItemMeta();
-        Objects.requireNonNull(meta5).setDisplayName(textReplace("&b称号名称"));
-        ArrayList<String> Lore5 = new ArrayList<>();
-        Lore5.add(BaseUtil.replaceChatColor("&9当前名称: &f["+pInfoList.get(0)+"&f]"));
-        Lore5.add(textReplace("&9点击输入称号名称"));
-        Lore5.add(textReplace("&9颜色符号实例"));
-        Lore5.add("§f&a亮绿->"+textReplace("&a亮绿")+"  §f&b亮蓝->"+textReplace("&b亮蓝"));
-        Lore5.add("§f&c红色->"+textReplace("&c红色")+"  §f&d粉色->"+textReplace("&d粉色"));
-        Lore5.add("§f&e黄色->"+textReplace("&e黄色")+"  §f&f白色->"+textReplace("&f白色"));
-        Lore5.add("§f&0黑色->"+textReplace("&0黑色")+"  §f&1蓝色->"+textReplace("&1蓝色"));
-        Lore5.add("§f&2绿色->"+textReplace("&2绿色")+"  §f&3青色->"+textReplace("&3青色"));
-        Lore5.add("§f&4深红->"+textReplace("&4深红")+"  §f&5紫色->"+textReplace("&5紫色"));
-        Lore5.add("§f&6金色->"+textReplace("&6金色")+"  §f&7浅灰->"+textReplace("&7浅灰"));
-        Lore5.add("§f&8深灰->"+textReplace("&8深灰")+"  §f&9浅蓝->"+textReplace("&9浅蓝"));
-		Lore5.add("§f&#2196f3->"+ BaseUtil.replaceChatColor("&#2196f3 支持6位RGB颜色代码"));
-        meta5.setLore(Lore5);
-        item5.setItemMeta(meta5);
-
-        ItemStack item3 = new ItemStack(Material.GRAY_STAINED_GLASS_PANE);
-        ItemMeta meta3 = item3.getItemMeta();
-        Objects.requireNonNull(meta3).setDisplayName(textReplace("&7定制专属称号"));
-        item3.setItemMeta(meta3);
-        inventory.setItem(0, item3);
-        inventory.setItem(2, item3);
-        inventory.setItem(4, item3);
-        inventory.setItem(6, item3);
-        inventory.setItem(8, item3);
-        inventory.setItem(1, item5);
-        inventory.setItem(3, item2);
-        inventory.setItem(5, item4);
-        inventory.setItem(7, item1);
-		p.openInventory(inventory);
 	}
 	
 	//限制生物过多
@@ -521,13 +241,13 @@ public class Main extends JavaPlugin implements Listener{
 		event.getEntity().getType();
 	}
 
-	//玩家加入事件
+	// 玩家加入事件
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent event){
 		
 		Player p = event.getPlayer();
 		
-		//检查配置文件丢失重新创建
+		// 检查配置文件丢失重新创建
 		if(!firstyml.exists()) {
 			this.saveResource("first.yml", true);
 			firstdata = YamlConfiguration.loadConfiguration(firstyml);
@@ -538,12 +258,12 @@ public class Main extends JavaPlugin implements Listener{
 			ipdata = YamlConfiguration.loadConfiguration(ipyml);
 		}
 		
-		//在线送钱
+		// 在线送钱
 		if(enablePlayMoney) {
 			pOnline.put(p.getName(), 0);
 		}
 		
-		//玩家进入提示
+		// 玩家进入提示
 		if(this.getConfig().getBoolean("EnableText")){
 			if (p.hasPermission("city.svip")) {
 				event.setJoinMessage(textReplace(this.getConfig().getString("JoinMessageSvip"),p));
@@ -599,7 +319,7 @@ public class Main extends JavaPlugin implements Listener{
 	@EventHandler
 	public void onBlockBreak(BlockBreakEvent event) {
         Player player = event.getPlayer();
-        //限制生存世界挖矿
+        // 限制生存世界挖矿
         if(WorldOreProtect) {
         	if(event.getBlock().getWorld()==Bukkit.getServer().getWorld(ProtectWorld)) {
 				for (String s : ProtectOreList) {
@@ -613,7 +333,7 @@ public class Main extends JavaPlugin implements Listener{
             }
         }
         
-        //挖掘刷怪笼
+        // 挖掘刷怪笼
         if(player.hasPermission("city.vip")&&SpawnerDrop) {
         	if(event.getBlock().getType()==Material.SPAWNER) {
         		event.setExpToDrop(0);
@@ -672,7 +392,7 @@ public class Main extends JavaPlugin implements Listener{
 
 	//补全指令
 	@Override
-	public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+	public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, String alias, String[] args) {
 		if (alias.equalsIgnoreCase("city") && args.length == 1) {
 			return Arrays.asList("info", "help", "reload", "version");
         }
@@ -684,7 +404,7 @@ public class Main extends JavaPlugin implements Listener{
 	
 	//指令输入
 	@Override
-	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args){
+	public boolean onCommand(@NotNull CommandSender sender, Command cmd, @NotNull String label, String[] args){
 		
 		if (cmd.getName().equalsIgnoreCase("city") && args.length == 1) {
 			//重载
@@ -732,12 +452,12 @@ public class Main extends JavaPlugin implements Listener{
 			
 		}
 		
-		//获取玩家信息
+		// 获取玩家信息
 		if (cmd.getName().equalsIgnoreCase("city") && args.length == 2) {
 			if (args[0].equalsIgnoreCase("info")){
 				if(sender.hasPermission("city.admin")) {
 					List<String> ipls = ipdata.getStringList(args[1]);
-					if(ipls.size() == 0) {
+					if(ipls.isEmpty()) {
 						sender.sendMessage("§b[夜城] §c没有找到该玩家的IP地址");
 					}else {
 						sender.sendMessage("§e找到"+ipls.size()+"个"+args[1]+"使用过的IP地址");
@@ -752,87 +472,13 @@ public class Main extends JavaPlugin implements Listener{
 			}
 		}
 		
-		if (cmd.getName().equalsIgnoreCase("dz") && args.length == 1) {
-			if(sender.hasPermission("city.admin")&&this.getConfig().getBoolean("EnableCutomPrefix")) {
-				Player player = Bukkit.getPlayer(args[0]);
-				if(player==null) {
-					sender.sendMessage("§b[夜城] 该玩家不在线");
-					return true;
-				}
-				List<String> pInfoList = prefixdata.getStringList(player.getName());
-				if(pInfoList.size()==0) {
-					pInfoList = new ArrayList<>();
-					pInfoList.add("鸽子");
-					pInfoList.add("力量(INCREASE_DAMAGE)");
-					pInfoList.add("饱和(SATURATION)");
-				}
-				TitleListParam titleListParam = new TitleListParam();
-				titleListParam.setBuyType("activity");
-				titleListParam.setAmount(99999);
-				titleListParam.setDay(0);
-				titleListParam.setIsHide(1);
-				titleListParam.setDescription(player.getName() + "定制专属称号");
-				titleListParam.setTitleName(BaseUtil.replaceChatColor("&f["+pInfoList.get(0)+"&f]"));
-				List<TitleBuffParam> titleBuffs = new ArrayList<>();
-				String buffStr1 = pInfoList.get(1);
-				String buffStr2 = pInfoList.get(2);
-				if(buffStr1.equals(buffStr2)) {
-					TitleBuffParam buff1 = new TitleBuffParam();
-					buff1.setBuffType(BuffTypeEnum.POTION_EFFECT);
-					PotionEffectParam potionEffectParam = new PotionEffectParam();
-					potionEffectParam.setPotionLevel(2);
-					potionEffectParam.setPotionHide(true);
-					potionEffectParam.setPotionChinesizationName(buffStr1.split("\\u0028")[0]);
-					potionEffectParam.setPotionName(buffStr1.substring(buffStr1.indexOf("(")+1,buffStr1.indexOf(")")));
-					buff1.setPotionEffectParam(potionEffectParam);
-					titleBuffs.add(buff1);
-				} else {
-					TitleBuffParam buff1 = new TitleBuffParam();
-					buff1.setBuffType(BuffTypeEnum.POTION_EFFECT);
-					PotionEffectParam potionEffectParam = new PotionEffectParam();
-					potionEffectParam.setPotionLevel(1);
-					potionEffectParam.setPotionHide(true);
-					potionEffectParam.setPotionChinesizationName(buffStr1.split("\\u0028")[0]);
-					potionEffectParam.setPotionName(buffStr1.substring(buffStr1.indexOf("(")+1,buffStr1.indexOf(")")));
-					buff1.setPotionEffectParam(potionEffectParam);
-					titleBuffs.add(buff1);
-					
-					TitleBuffParam buff2 = new TitleBuffParam();
-					buff2.setBuffType(BuffTypeEnum.POTION_EFFECT);
-					PotionEffectParam potionEffectParam2 = new PotionEffectParam();
-					potionEffectParam2.setPotionLevel(1);
-					potionEffectParam2.setPotionHide(true);
-					potionEffectParam2.setPotionChinesizationName(buffStr2.split("\\u0028")[0]);
-					potionEffectParam2.setPotionName(buffStr2.substring(buffStr2.indexOf("(")+1,buffStr2.indexOf(")")));
-					buff2.setPotionEffectParam(potionEffectParam2);
-					titleBuffs.add(buff2);
-				}
-				titleListParam.setTitleBuffs(titleBuffs);
-				plt.set(player.getName(), plt.add(titleListParam), 0);
-				player.sendMessage("§b[夜城] §a定制称号已发往你的仓库");
-				sender.sendMessage("§b[夜城] §a已经成功发放定制称号");
-			} else {
-				sender.sendMessage("§b[夜城] §c你没有足够的权限执行");
-			}
-			return true;
-		}
-		
-		//以下指令不能在控制台输入
+		// 以下指令不能在控制台输入
 		if (!(sender instanceof Player player)) {
 			outPut("§b[夜城] §c该指令不能在控制台输入");
 			return true;
 	    }
-
-		if (cmd.getName().equalsIgnoreCase("dz") && args.length == 0) {
-			if(sender.hasPermission("city.user")&&this.getConfig().getBoolean("EnableCutomPrefix")) {
-				openDZInventory(player);
-			} else {
-				sender.sendMessage("§b[夜城] §c你没有足够的权限执行");
-			}
-			return true;
-		}
 		
-		//在线送钱
+		// 在线送钱
 		if (cmd.getName().equalsIgnoreCase("pm")) {
 			if(sender.hasPermission("city.user") && enablePlayMoney) {
 				int onlineTime = pOnline.get(player.getName());

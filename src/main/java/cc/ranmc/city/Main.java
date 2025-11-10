@@ -141,11 +141,11 @@ public class Main extends JavaPlugin implements Listener{
         
 		// 玩家退出提示
         if (player.hasPermission("city.svip")) {
-            event.setQuitMessage(textReplace(textReplace(getConfig().getString("QuitMessageSvip"),player)));
+            event.setQuitMessage(textReplace(textReplace(getConfig().getString("QuitMessageSvip"), player)));
         } else if (player.hasPermission("city.vip")) {
-            event.setQuitMessage(textReplace(textReplace(getConfig().getString("QuitMessageVip"),player)));
+            event.setQuitMessage(textReplace(textReplace(getConfig().getString("QuitMessageVip"), player)));
         } else {
-            event.setQuitMessage(textReplace(textReplace(getConfig().getString("QuitMessage"),player)));
+            event.setQuitMessage(textReplace(textReplace(getConfig().getString("QuitMessage"), player)));
         }
 	}
 

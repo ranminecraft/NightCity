@@ -168,7 +168,7 @@ public class Main extends JavaPlugin implements Listener{
 		}
 	}
 
-	//补全指令
+	// 补全指令
 	@Override
 	public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, String alias, String[] args) {
 		if (alias.equalsIgnoreCase("city") && args.length == 1) {

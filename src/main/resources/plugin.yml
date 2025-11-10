@@ -2,7 +2,7 @@ name: NightCity
 main: cc.ranmc.city.Main
 description: NightCity Forever
 author: Ranica
-version: Release 5.0
+version: Release 6.0
 api-version: "1.21"
 softdepend: [Vault]
 
@@ -41,18 +41,6 @@ commands:
     description: city
     usage: /<command>
 
-  pm:
-    description: pm
-    usage: /<command>
-
-  spawn:
-    description: spawn
-    usage: /<command>
-
   kit:
     description: kit
-    usage: /<command>
-
-  dz:
-    description: dz
     usage: /<command>

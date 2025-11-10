@@ -222,7 +222,7 @@ public class Main extends JavaPlugin implements Listener{
 							"§e--------------------\n" +
 							"§bCityPlugin §dBy Ranica" +
 							"\n§bVersion: "+getDescription().getVersion() +
-							"\n§chttp://www.xyfcm.top\n§e--------------------");
+							"\n§chttps://www.ranmc.cc\n§e--------------------");
 					} else {
 						sender.sendMessage("§b[夜城] §c你没有足够的权限执行");
 					}

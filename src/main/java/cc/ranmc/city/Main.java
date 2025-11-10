@@ -30,15 +30,9 @@ public class Main extends JavaPlugin implements Listener{
 	
 	public YamlConfiguration ipData;
 	public File ipYml;
-
     public String ProtectWorld;
     public List<String> ProtectOreList;
   	private static Economy econ;
-	
-	@Override
-	public void onDisable() {
-		super.onDisable();
-	}
 	
 	@Override
 	public void onEnable() {
@@ -70,7 +64,7 @@ public class Main extends JavaPlugin implements Listener{
             print("§b[CityPlugin] §c无法找到Vault插件,部分功能受限");
         }
         
-        //世界矿物保护
+        // 世界矿物保护
         ProtectWorld = getConfig().getString("ProtectWorld");
         ProtectOreList = getConfig().getStringList("ProtectOre");
 	}
@@ -96,32 +90,30 @@ public class Main extends JavaPlugin implements Listener{
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		
-		Player p = event.getPlayer();
+		Player player = event.getPlayer();
 		
 		// 玩家进入提示
-        if (p.hasPermission("city.svip")) {
-            event.setJoinMessage(textReplace(getConfig().getString("JoinMessageSvip"),p));
-        } else if (p.hasPermission("city.vip")) {
-            event.setJoinMessage(textReplace(getConfig().getString("JoinMessageVip"),p));
+        if (player.hasPermission("city.svip")) {
+            event.setJoinMessage(textReplace(getConfig().getString("JoinMessageSvip"),player));
+        } else if (player.hasPermission("city.vip")) {
+            event.setJoinMessage(textReplace(getConfig().getString("JoinMessageVip"),player));
         } else {
-            event.setJoinMessage(textReplace(getConfig().getString("JoinMessage"),p));
+            event.setJoinMessage(textReplace(getConfig().getString("JoinMessage"),player));
         }
 		
 		// 保存玩家IP地址
-        List<String> ipList = ipData.getStringList(p.getName());
+        List<String> ipList = ipData.getStringList(player.getName());
 
         if (ipList.isEmpty()) {
             // 首次进入欢迎语
-            say(textReplace(getConfig().getString("FirstJoinMessage"),p));
+            say(textReplace(getConfig().getString("FirstJoinMessage"),player));
             // 首次进入执行指令
-            getServer().dispatchCommand(getServer().getConsoleSender(), textReplace(getConfig().getString("RunCommandFirstJoin"), p));
+            getServer().dispatchCommand(getServer().getConsoleSender(), textReplace(getConfig().getString("RunCommandFirstJoin"), player));
         }
 
-        String address = Objects.requireNonNull(p.getAddress()).getHostString();
-        if (!ipList.contains(address)) {
-            ipList.add(address);
-        }
-        ipData.set(p.getName(), ipList);
+        String address = Objects.requireNonNull(player.getAddress()).getHostString();
+        if (!ipList.contains(address)) ipList.add(address);
+        ipData.set(player.getName(), ipList);
         try {
             ipData.save(ipYml);
         } catch (IOException ignored) {}
@@ -145,15 +137,15 @@ public class Main extends JavaPlugin implements Listener{
 	// 玩家退出事件
 	@EventHandler
 	public void onPlayerQuit(PlayerQuitEvent event) {
-		Player p = event.getPlayer();
+		Player player = event.getPlayer();
         
 		// 玩家退出提示
-        if (p.hasPermission("city.svip")) {
-            event.setQuitMessage(textReplace(textReplace(getConfig().getString("QuitMessageSvip"),p)));
-        } else if (p.hasPermission("city.vip")) {
-            event.setQuitMessage(textReplace(textReplace(getConfig().getString("QuitMessageVip"),p)));
+        if (player.hasPermission("city.svip")) {
+            event.setQuitMessage(textReplace(textReplace(getConfig().getString("QuitMessageSvip"),player)));
+        } else if (player.hasPermission("city.vip")) {
+            event.setQuitMessage(textReplace(textReplace(getConfig().getString("QuitMessageVip"),player)));
         } else {
-            event.setQuitMessage(textReplace(textReplace(getConfig().getString("QuitMessage"),p)));
+            event.setQuitMessage(textReplace(textReplace(getConfig().getString("QuitMessage"),player)));
         }
 	}
 

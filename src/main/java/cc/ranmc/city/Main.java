@@ -21,7 +21,6 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerSwapHandItemsEvent;
-import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import net.milkbowl.vault.economy.Economy;
@@ -35,7 +34,6 @@ public class Main extends JavaPlugin implements Listener{
     public String ProtectWorld;
     public List<String> ProtectOreList;
   	private static Economy econ;
-    public RegisteredServiceProvider<Economy> rsp;
 	
 	@Override
 	public void onDisable() {
@@ -66,8 +64,7 @@ public class Main extends JavaPlugin implements Listener{
 		
         // Vault插件
         if (Bukkit.getPluginManager().isPluginEnabled("Vault")) {
-        	rsp = getServer().getServicesManager().getRegistration(Economy.class);
-            econ = Objects.requireNonNull(rsp).getProvider();
+            econ = Objects.requireNonNull(getServer().getServicesManager().getRegistration(Economy.class)).getProvider();
             print("§b[CityPlugin] §a成功加载Vault插件");
         } else {
             print("§b[CityPlugin] §c无法找到Vault插件,部分功能受限");

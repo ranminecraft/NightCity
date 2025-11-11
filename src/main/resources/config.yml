@@ -6,7 +6,7 @@ JoinMessageSvip: "&e%player%&6[SVIP]&b加入了夜之城!"
 QuitMessage: "&e%player%&b离开了夜之城!"
 QuitMessageVip: "&e%player%&c[VIP]&b离开了夜之城!"
 QuitMessageSvip: "&e%player%&6[SVIP]&b离开了夜之城!"
-ProtectWorld: "zy"
+ProtectWorld: "world"
 ProtectOre:
   - COAL_ORE
   - IRON_ORE
@@ -28,3 +28,15 @@ ProtectOre:
   - NETHER_GOLD_ORE
   - NETHER_QUARTZ_ORE
   - ANCIENT_DEBRIS
+
+treasure:
+  # 生成宝藏的世界
+  world: "zy"
+  # 生成宝藏的间隔(单位：秒)
+  time: 60
+  # 生成宝藏的几率
+  random: 0.5
+  # 最多可以生成宝藏数量
+  max: 5
+  # 生成范围(会生成负数)
+  radius: 25000

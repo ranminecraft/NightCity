@@ -1,15 +1,19 @@
 package cc.ranmc.city.listener;
 
 import cc.ranmc.city.Main;
+import cc.ranmc.city.util.TreasureUtil;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerSwapHandItemsEvent;
+import org.bukkit.inventory.ItemStack;
 
 import java.io.IOException;
 import java.util.List;
@@ -19,6 +23,18 @@ import static cc.ranmc.city.util.BasicUtil.say;
 import static cc.ranmc.city.util.BasicUtil.textReplace;
 
 public class PlayerListener implements Listener {
+
+    @EventHandler
+    public void onPlayerInteractEvent(PlayerInteractEvent event) {
+        Player player = event.getPlayer();
+        ItemStack item = event.getItem();
+        if (item == null) return;
+        if (item.getType() == Material.DIAMOND) {
+            if (TreasureUtil.showDistance(player)) {
+                item.setAmount(item.getAmount() - 1);
+            }
+        }
+    }
 
     // 玩家退出事件
     @EventHandler

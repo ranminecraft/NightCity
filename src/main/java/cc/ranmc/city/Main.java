@@ -9,6 +9,7 @@ import cc.ranmc.city.command.CityTabComplete;
 import cc.ranmc.city.listener.BlockListener;
 import cc.ranmc.city.listener.GUIListener;
 import cc.ranmc.city.listener.PlayerListener;
+import cc.ranmc.city.util.TreasureUtil;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.command.PluginCommand;
@@ -50,6 +51,8 @@ public class Main extends JavaPlugin implements Listener{
 		
 		// 输出成功启动
 		Bukkit.getConsoleSender().sendMessage(textReplace("&b[夜城] &a插件已经成功加载 &dBy Ranica"));
+
+        Bukkit.getScheduler().runTaskTimer(this, TreasureUtil::generate,10 * 20, 10 * 20);
 	}
 	
 	// 加载配置文件

@@ -22,37 +22,40 @@ public class CityCommand implements CommandExecutor {
         if (args.length == 1) {
             // 重载
             if (args[0].equalsIgnoreCase("reload")) {
-                if (sender.hasPermission("city.admin")) {
-                    Main.getInstance().loadConfig();
-                    sender.sendMessage("§b[夜城] §aReload complete");
-                } else {
+                if (!sender.hasPermission("city.admin")) {
                     sender.sendMessage("§b[夜城] §c你没有足够的权限执行");
+                    return true;
                 }
+                Main.getInstance().loadConfig();
+                sender.sendMessage("§b[夜城] §a重载成功");
                 return true;
             }
 
         }
 
-        // 获取玩家信息
         if (args.length == 2) {
+            // 存钱
+            if (args[0].equalsIgnoreCase("money")) {
+
+            }
+            // 获取玩家信息
             if (args[0].equalsIgnoreCase("info")) {
-                if (sender.hasPermission("city.admin")) {
-                    List<String> ipList = Main.getInstance().getIpData().getStringList(args[1]);
-                    if (ipList.isEmpty()) {
-                        sender.sendMessage("§b[夜城] §c没有找到该玩家的IP地址");
-                    } else {
-                        sender.sendMessage("§e找到" + ipList.size() + "个" + args[1] + "使用过的IP地址");
-                        for (String ipl : ipList) {
-                            sender.sendMessage(textReplace("&e- " + ipl));
-                        }
-                    }
-                } else {
+                if (!sender.hasPermission("city.admin")) {
                     sender.sendMessage("§b[夜城] §c你没有足够的权限执行");
+                    return true;
+                }
+                List<String> ipList = Main.getInstance().getIpData().getStringList(args[1]);
+                if (ipList.isEmpty()) {
+                    sender.sendMessage("§b[夜城] §c没有找到该玩家的IP地址");
+                    return true;
+                }
+                sender.sendMessage("§e找到" + ipList.size() + "个" + args[1] + "使用过的IP地址");
+                for (String ipl : ipList) {
+                    sender.sendMessage(textReplace("&e- " + ipl));
                 }
                 return true;
             }
         }
-
         sender.sendMessage("§b[夜城] §c未知指令,请检查后重新输入");
         return true;
 

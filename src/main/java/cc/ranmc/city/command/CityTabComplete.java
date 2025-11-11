@@ -15,12 +15,8 @@ public class CityTabComplete implements TabCompleter {
                                       @NotNull Command command,
                                       @NotNull String alias,
                                       String[] args) {
-        if (args.length == 1) {
-            return List.of("info");
-        }
-        if (args.length == 2 && args[0].equals("info")) {
-            return null;
-        }
+        if (args.length == 1) return List.of("info", "money");
+        if (args.length == 2 && args[0].equals("info")) return null;
         return new ArrayList<>();
     }
 }

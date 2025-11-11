@@ -19,8 +19,8 @@ public class BlockListener implements Listener {
         Player player = event.getPlayer();
         // 限制生存世界挖矿
         if (event.getBlock().getWorld().getName()
-                .equalsIgnoreCase(Main.getInstance().getProtectWorld())) {
-            for (String ore : Main.getInstance().getProtectOreList()) {
+                .equalsIgnoreCase(Main.getInstance().getConfig().getString("ProtectWorld"))) {
+            for (String ore : Main.getInstance().getConfig().getStringList("ProtectOre")) {
                 if (event.getBlock().getType() == Material.getMaterial(ore)) {
                     player.sendMessage("§b[夜城] §c请前往资源世界挖矿");
                     event.setExpToDrop(0);

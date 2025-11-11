@@ -2,15 +2,11 @@ name: NightCity
 main: cc.ranmc.city.Main
 description: NightCity Forever
 author: Ranica
-version: Release 6.0
+version: Release 6.1
 api-version: "1.21"
 softdepend: [Vault]
 
-permissions: 
-
-  city.passcheck:
-    default: op
-    description: 'Pass check'
+permissions:
 
   city.admin:
     default: op

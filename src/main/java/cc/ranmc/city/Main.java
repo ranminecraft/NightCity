@@ -7,6 +7,7 @@ import java.util.Objects;
 import cc.ranmc.city.command.CityCommand;
 import cc.ranmc.city.command.CityTabComplete;
 import cc.ranmc.city.listener.BlockListener;
+import cc.ranmc.city.listener.GUIListener;
 import cc.ranmc.city.listener.PlayerListener;
 import lombok.Getter;
 import org.bukkit.Bukkit;
@@ -23,13 +24,9 @@ import static cc.ranmc.city.util.BasicUtil.textReplace;
 public class Main extends JavaPlugin implements Listener{
 
     @Getter
-	private YamlConfiguration ipData;
+	private YamlConfiguration ipData, treasureData;
     @Getter
-    private File ipYml;
-    @Getter
-    private String ProtectWorld;
-    @Getter
-    private List<String> ProtectOreList;
+    private File ipYml, treasureYml;
     @Getter
   	private Economy econ;
     @Getter
@@ -41,6 +38,7 @@ public class Main extends JavaPlugin implements Listener{
 		// 注册 Event
 		Bukkit.getPluginManager().registerEvents(new BlockListener(), this);
         Bukkit.getPluginManager().registerEvents(new PlayerListener(), this);
+        Bukkit.getPluginManager().registerEvents(new GUIListener(), this);
 
         // 注册指令
         PluginCommand cityCommand = Objects.requireNonNull(Bukkit.getPluginCommand("city"));
@@ -59,10 +57,15 @@ public class Main extends JavaPlugin implements Listener{
 		// 检查配置文件
 		reloadConfig();
 		
-		// 加载IP地址
+		// 加载 IP 地址
 		ipYml = new File(getDataFolder(), "ip.yml");
 		if (!ipYml.exists()) saveResource("ip.yml", true);
 		ipData = YamlConfiguration.loadConfiguration(ipYml);
+
+        // 加载宝藏地址
+        treasureYml = new File(getDataFolder(), "treasure.yml");
+        if (!treasureYml.exists()) saveResource("treasure.yml", true);
+        treasureData = YamlConfiguration.loadConfiguration(treasureYml);
 		
         // Vault插件
         if (Bukkit.getPluginManager().isPluginEnabled("Vault")) {
@@ -71,10 +74,6 @@ public class Main extends JavaPlugin implements Listener{
         } else {
             print("§b[夜城] §c无法找到Vault插件,部分功能受限");
         }
-        
-        // 世界矿物保护
-        ProtectWorld = getConfig().getString("ProtectWorld");
-        ProtectOreList = getConfig().getStringList("ProtectOre");
 	}
 	
 }

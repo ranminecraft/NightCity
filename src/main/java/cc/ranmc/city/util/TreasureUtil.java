@@ -44,6 +44,7 @@ public class TreasureUtil {
         int finalZ = z;
         world.getChunkAtAsync(new Location(world, x, 0, z)).thenAccept(_ -> {
             Block block = world.getHighestBlockAt(finalX, finalZ);
+            if (block.getType() == Material.WATER) return;
             Location location = block.getLocation();
             block.setType(Material.DECORATED_POT);
             if (block.getState() instanceof DecoratedPot pot) {

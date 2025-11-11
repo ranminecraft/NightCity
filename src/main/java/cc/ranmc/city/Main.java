@@ -68,15 +68,15 @@ public class Main extends JavaPlugin implements Listener{
                 40 * 20
         );
         FurnaceRecipe coinRecipe500 = new FurnaceRecipe(
-                new NamespacedKey(this, "city_coin_500"),
-                MoneyUtil.getMoneyItem(500),
+                new NamespacedKey(this, "city_coin_400"),
+                MoneyUtil.getMoneyItem(400),
                 Material.MUSIC_DISC_CREATOR_MUSIC_BOX,
                 0.0f,
                 30 * 20
         );
         FurnaceRecipe coinRecipe1000 = new FurnaceRecipe(
-                new NamespacedKey(this, "city_coin_1000"),
-                MoneyUtil.getMoneyItem(1000),
+                new NamespacedKey(this, "city_coin_500"),
+                MoneyUtil.getMoneyItem(500),
                 Material.MUSIC_DISC_TEARS,
                 0.0f,
                 20 * 20

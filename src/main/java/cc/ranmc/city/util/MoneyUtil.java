@@ -12,6 +12,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.Objects;
 
+import static cc.ranmc.city.util.BasicUtil.returnItem;
 import static cc.ranmc.city.util.BasicUtil.textReplace;
 
 public class MoneyUtil {
@@ -61,7 +62,7 @@ public class MoneyUtil {
         if (!lore.startsWith(textReplace("&e面值: "))) return 0;
         int money = 0;
         try {
-            money = Integer.parseInt(lore.split(" ")[1]);
+            money = Integer.parseInt(lore.split(" ")[1]) * item.getAmount();
         } catch (NullPointerException ignored) {}
         return money;
     }
@@ -75,14 +76,31 @@ public class MoneyUtil {
         inventory.setItem(48, PANE);
         inventory.setItem(49, BasicUtil.getItem(Material.VAULT, 1,
                 "&b存入现金",
-                "&b请在上方放入现金",
-                "&b本页金额&e 0",
-                "&b你的余额&e " + (int) Main.getInstance().getEcon().getBalance(player)));
+                "&e你的余额&c " + (int) Main.getInstance().getEcon().getBalance(player),
+                "&e请在上方放入现金",
+                "&e不要放置其他物品",
+                "&e否则可能造成遗失"));
         inventory.setItem(50, PANE);
         inventory.setItem(51, PANE);
         inventory.setItem(52, PANE);
         inventory.setItem(53, BasicUtil.getItem(Material.RED_STAINED_GLASS_PANE, 1, "&c关闭菜单"));
         player.openInventory(inventory);
+    }
+
+    public static void save(Player player, Inventory inventory) {
+        int money = 0;
+        for (int i = 0; i < 45; i++) {
+            ItemStack item = inventory.getItem(i);
+            if (item == null) continue;
+            if (MoneyUtil.isMoney(item)) {
+                money += MoneyUtil.countMoney(item);
+                inventory.setItem(i, new ItemStack(Material.AIR));
+            } else {
+                returnItem(player, item);
+            }
+        }
+        Main.getInstance().getEcon().depositPlayer(player, money);
+        player.sendMessage(textReplace("&a夜城币 " + money + " 已经存入你的账户"));
     }
 
 }

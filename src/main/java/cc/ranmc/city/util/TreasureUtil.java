@@ -72,15 +72,15 @@ public class TreasureUtil {
         ItemStack diamond = MoneyUtil.getMoney100Item();
         diamond.setAmount(new Random().nextInt(3) + 1);
         list.add(diamond);
-        if (Math.random() >= 0.5) {
+        if (Math.random() >= 0.6) {
             ItemStack item = MoneyUtil.getMoney100Item();
             item.setAmount(new Random().nextInt(10) + 1);
             list.add(MoneyUtil.getMoney100Item());
         }
-        if (Math.random() >= 0.1) {
+        if (Math.random() >= 0.3) {
             list.add(CardUtil.getRandomCard());
         }
-        if (Math.random() >= 0.05) {
+        if (Math.random() >= 0.1) {
             list.add(MoneyUtil.getMoney1000Item());
         }
         return list;

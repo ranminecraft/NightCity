@@ -119,7 +119,16 @@ public class BasicUtil {
                 return false;
             }
         }
-
         return true;
+    }
+
+    public static void returnItem(Player player, ItemStack item) {
+        if (BasicUtil.isInventoryFull(player)) {
+            player.getWorld().dropItem(player.getLocation(), item);
+            player.sendMessage(textReplace("&c请勿放入非现金,已掉落地面"));
+        } else {
+            player.getInventory().addItem(item);
+            player.sendMessage(textReplace("&c请勿放入非现金,已返还背包"));
+        }
     }
 }

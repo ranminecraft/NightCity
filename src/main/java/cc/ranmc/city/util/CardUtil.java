@@ -1,6 +1,5 @@
 package cc.ranmc.city.util;
 
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -8,21 +7,32 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.util.List;
 import java.util.Random;
 
+import static cc.ranmc.city.constans.CardStatus.BAD;
+import static cc.ranmc.city.constans.CardStatus.BEST;
+import static cc.ranmc.city.constans.CardStatus.BROKEN;
+import static cc.ranmc.city.constans.CardStatus.FINE;
+import static cc.ranmc.city.constans.CardStatus.GOOD;
+import static cc.ranmc.city.constans.CardType.A;
+import static cc.ranmc.city.constans.CardType.B;
+import static cc.ranmc.city.constans.CardType.C;
+import static cc.ranmc.city.constans.CardType.S;
+import static cc.ranmc.city.constans.CardType.SSS;
+
 public class CardUtil {
 
     private static final List<String> CARD_TYPE = List.of(
-            "&a&lSSS",
-            "&b&lS", "&b&lS",
-            "&e&lA", "&e&lA", "&e&lA",
-            "&c&lB", "&c&lB", "&c&lB", "&c&lB",
-            "&4&lC", "&4&lC", "&4&lC", "&4&lC", "&4&lC");
+            SSS,
+            S, S,
+            A, A, A,
+            B, B, B, B,
+            C, C, C, C, C);
 
     private static final List<String> CARD_STATUS = List.of(
-            "&a&l全新",
-            "&b&l优秀", "&b&l优秀",
-            "&e&l良好", "&e&l良好", "&e&l良好",
-            "&c&l差劲", "&c&l差劲", "&c&l差劲", "&c&l差劲",
-            "&4&l损坏");
+            BEST,
+            GOOD, GOOD,
+            FINE, FINE, FINE,
+            BAD, BAD, BAD, BAD,
+            BROKEN);
 
     public static ItemStack getRandomCard() {
         return getCard(CARD_TYPE.get(new Random().nextInt(CARD_TYPE.size())),
@@ -37,13 +47,13 @@ public class CardUtil {
     }
 
     public static Material getMaterial(String type, String status) {
-        if (status.contains("损坏")) return Material.MUSIC_DISC_11;
-        return switch (ChatColor.stripColor(type)) {
-            case "SSS" -> Material.MUSIC_DISC_TEARS;
-            case "S" -> Material.MUSIC_DISC_CREATOR_MUSIC_BOX;
-            case "A" -> Material.MUSIC_DISC_RELIC;
-            case "B" -> Material.MUSIC_DISC_PRECIPICE;
-            case "C" -> Material.MUSIC_DISC_STAL;
+        if (status.contains(BROKEN)) return Material.MUSIC_DISC_11;
+        return switch (type) {
+            case SSS -> Material.MUSIC_DISC_TEARS;
+            case S -> Material.MUSIC_DISC_CREATOR_MUSIC_BOX;
+            case A -> Material.MUSIC_DISC_RELIC;
+            case B -> Material.MUSIC_DISC_PRECIPICE;
+            case C -> Material.MUSIC_DISC_STAL;
             default -> Material.MUSIC_DISC_11;
         };
     }

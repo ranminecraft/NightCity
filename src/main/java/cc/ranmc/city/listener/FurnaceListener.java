@@ -3,13 +3,18 @@ package cc.ranmc.city.listener;
 import cc.ranmc.city.Main;
 import cc.ranmc.city.util.CardUtil;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Furnace;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.FurnaceSmeltEvent;
 import org.bukkit.inventory.ItemStack;
+
+import static cc.ranmc.city.constans.CardStatus.BAD;
+import static cc.ranmc.city.constans.CardStatus.BEST;
+import static cc.ranmc.city.constans.CardStatus.BROKEN;
+import static cc.ranmc.city.constans.CardStatus.FINE;
+import static cc.ranmc.city.constans.CardStatus.GOOD;
 
 public class FurnaceListener implements Listener {
 
@@ -23,21 +28,21 @@ public class FurnaceListener implements Listener {
             event.setResult(new ItemStack(Material.AIR));
             return;
         }
-         switch (ChatColor.stripColor(status)) {
-            case "全新" -> status = "&b&l优秀";
-            case "优秀" -> {
+         switch (status) {
+            case BEST -> status = GOOD;
+            case GOOD -> {
                 if (Math.random() < 0.1) {
-                    status = "&e&l良好";
+                    status = FINE;
                 }
             }
-            case "良好" -> {
+            case FINE -> {
                 if (Math.random() < 0.2) {
-                    status = "&c&l差劲";
+                    status = BAD;
                 }
             }
-            case "差劲" -> {
+            case BAD -> {
                 if (Math.random() < 0.3) {
-                    status = "&c&l损坏";
+                    status = BROKEN;
                 }
             }
         }

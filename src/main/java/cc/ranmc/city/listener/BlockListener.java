@@ -3,7 +3,6 @@ package cc.ranmc.city.listener;
 import cc.ranmc.city.Main;
 import cc.ranmc.city.util.BasicUtil;
 import cc.ranmc.city.util.TreasureUtil;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -12,12 +11,10 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPistonExtendEvent;
 import org.bukkit.event.block.BlockPistonRetractEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.event.player.PlayerSwapHandItemsEvent;
 
 import java.util.List;
 
-import static cc.ranmc.city.util.BasicUtil.textReplace;
+import static cc.ranmc.city.util.BasicUtil.color;
 
 public class BlockListener implements Listener {
 

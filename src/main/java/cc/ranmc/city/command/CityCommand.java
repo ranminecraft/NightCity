@@ -1,8 +1,9 @@
 package cc.ranmc.city.command;
 
 import cc.ranmc.city.Main;
+import cc.ranmc.city.util.BasicUtil;
+import cc.ranmc.city.util.CardUtil;
 import cc.ranmc.city.util.MoneyUtil;
-import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -11,7 +12,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-import static cc.ranmc.city.util.BasicUtil.textReplace;
+import static cc.ranmc.city.util.BasicUtil.color;
 
 public class CityCommand implements CommandExecutor {
 
@@ -30,6 +31,9 @@ public class CityCommand implements CommandExecutor {
                 }
                 Main.getInstance().loadConfig();
                 sender.sendMessage("§b[夜城] §a重载成功");
+
+                ((Player)sender).getInventory().addItem(CardUtil.getRandomCard());
+
                 return true;
             }
             // 存钱
@@ -53,7 +57,7 @@ public class CityCommand implements CommandExecutor {
                 }
                 sender.sendMessage("§e找到" + ipList.size() + "个" + args[1] + "使用过的IP地址");
                 for (String ipl : ipList) {
-                    sender.sendMessage(textReplace("&e- " + ipl));
+                    sender.sendMessage(BasicUtil.color("&e- " + ipl));
                 }
                 return true;
             }

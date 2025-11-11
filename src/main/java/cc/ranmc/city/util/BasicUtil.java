@@ -27,7 +27,7 @@ public class BasicUtil {
     }
 
     // 文本替换
-    public static String textReplace(String text) {
+    public static String color(String text) {
         if (text == null) {
             text = "";
             print("§b[夜城] §c插件输出文本信息出错");
@@ -37,7 +37,7 @@ public class BasicUtil {
         return text;
     }
 
-    public static String textReplace(String text, Player p) {
+    public static String color(String text, Player p) {
         if (text == null) {
             text = "";
             print("§b[夜城] §c插件输出文本信息出错");
@@ -89,7 +89,7 @@ public class BasicUtil {
     public static ItemStack getItem(Material material, int count, String name) {
         ItemStack item = new ItemStack(material,count);
         ItemMeta meta = item.getItemMeta();
-        Objects.requireNonNull(meta).setDisplayName(textReplace(name));
+        Objects.requireNonNull(meta).setDisplayName(color(name));
         item.setItemMeta(meta);
         return item;
     }
@@ -101,9 +101,9 @@ public class BasicUtil {
     public static ItemStack getItem(Material material, int count, String name, List<String> lore) {
         ItemStack item = new ItemStack(material,count);
         ItemMeta meta = item.getItemMeta();
-        Objects.requireNonNull(meta).setDisplayName(textReplace(name));
+        Objects.requireNonNull(meta).setDisplayName(color(name));
         List<String> newLore = new ArrayList<>();
-        lore.forEach(line -> newLore.add(textReplace(line)));
+        lore.forEach(line -> newLore.add(color(line)));
         meta.setLore(newLore);
         item.setItemMeta(meta);
         return item;
@@ -125,10 +125,10 @@ public class BasicUtil {
     public static void returnItem(Player player, ItemStack item) {
         if (BasicUtil.isInventoryFull(player)) {
             player.getWorld().dropItem(player.getLocation(), item);
-            player.sendMessage(textReplace("&c请勿放入非现金,已掉落地面"));
+            player.sendMessage(color("&c请勿放入非现金,已掉落地面"));
         } else {
             player.getInventory().addItem(item);
-            player.sendMessage(textReplace("&c请勿放入非现金,已返还背包"));
+            player.sendMessage(color("&c请勿放入非现金,已返还背包"));
         }
     }
 }

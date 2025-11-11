@@ -17,7 +17,7 @@ import java.util.Random;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static cc.ranmc.city.util.BasicUtil.print;
-import static cc.ranmc.city.util.BasicUtil.textReplace;
+import static cc.ranmc.city.util.BasicUtil.color;
 
 public class TreasureUtil {
 
@@ -69,19 +69,25 @@ public class TreasureUtil {
 
     private static List<ItemStack> getTreasureItem() {
         List<ItemStack> list = new ArrayList<>();
-        ItemStack diamond = MoneyUtil.getMoney100Item();
+        ItemStack diamond = new ItemStack(Material.DIAMOND);
         diamond.setAmount(new Random().nextInt(3) + 1);
         list.add(diamond);
-        if (Math.random() >= 0.6) {
-            ItemStack item = MoneyUtil.getMoney100Item();
+        if (Math.random() >= 0.4) {
+            ItemStack item = MoneyUtil.getMoneyItem(100);
             item.setAmount(new Random().nextInt(10) + 1);
-            list.add(MoneyUtil.getMoney100Item());
+            list.add(item);
         }
         if (Math.random() >= 0.3) {
             list.add(CardUtil.getRandomCard());
         }
         if (Math.random() >= 0.1) {
-            list.add(MoneyUtil.getMoney1000Item());
+            list.add(MoneyUtil.getMoneyItem(500));
+        }
+        if (Math.random() >= 0.1) {
+            list.add(MoneyUtil.getMoneyItem(200));
+        }
+        if (Math.random() >= 0.1) {
+            list.add(MoneyUtil.getMoneyItem(1000));
         }
         return list;
     }
@@ -89,14 +95,14 @@ public class TreasureUtil {
     public static boolean showDistance(Player player) {
         String treasureWorldName = Main.getInstance().getConfig().getString("treasure.world", "zy");
         if (!treasureWorldName.equals(player.getWorld().getName())) {
-            player.sendMessage(textReplace("&b[夜城] &c当前世界没有宝藏，请前往资源世界"));
+            player.sendMessage(BasicUtil.color("&b[夜城] &c当前世界没有宝藏，请前往资源世界"));
             return false;
         }
         final double[] distance = {999999};
         Location playerLocation = player.getLocation();
         List<String> worldList = Main.getInstance().getTreasureData().getStringList(treasureWorldName);
         if (worldList.isEmpty()) {
-            player.sendMessage(textReplace("&b[夜城] &e宝藏已经全部找完了，请稍后再来吧"));
+            player.sendMessage(BasicUtil.color("&b[夜城] &e宝藏已经全部找完了，请稍后再来吧"));
             return false;
         }
         AtomicReference<Location> location = new AtomicReference<>(player.getLocation());
@@ -114,7 +120,7 @@ public class TreasureUtil {
             }
             return showDistance(player);
         }
-        player.sendMessage(textReplace("&b[夜城] &a找到宝藏距离你 &e" + String.format("%,.0f", distance[0]) + "m"));
+        player.sendMessage(BasicUtil.color("&b[夜城] &a找到宝藏距离你 &e" + String.format("%,.0f", distance[0]) + "m"));
         return true;
     }
 

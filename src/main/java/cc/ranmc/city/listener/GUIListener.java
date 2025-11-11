@@ -1,5 +1,6 @@
 package cc.ranmc.city.listener;
 
+import cc.ranmc.city.util.BasicUtil;
 import cc.ranmc.city.util.MoneyUtil;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -10,7 +11,6 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import static cc.ranmc.city.util.BasicUtil.returnItem;
-import static cc.ranmc.city.util.BasicUtil.textReplace;
 import static cc.ranmc.city.util.MoneyUtil.GUI_TITLE;
 
 public class GUIListener implements Listener {
@@ -40,7 +40,7 @@ public class GUIListener implements Listener {
 
         Player player = (Player) event.getWhoClicked();
         ItemStack clicked = event.getCurrentItem();
-        if (event.getView().getTitle().equals(textReplace(GUI_TITLE))) {
+        if (event.getView().getTitle().equals(BasicUtil.color(GUI_TITLE))) {
             Inventory inventory = event.getClickedInventory();
             if (inventory == null) return;
             if (inventory != player.getInventory() && event.getRawSlot() >= 45) {

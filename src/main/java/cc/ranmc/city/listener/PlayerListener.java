@@ -1,6 +1,7 @@
 package cc.ranmc.city.listener;
 
 import cc.ranmc.city.Main;
+import cc.ranmc.city.util.BasicUtil;
 import cc.ranmc.city.util.TreasureUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -20,7 +21,7 @@ import java.util.List;
 import java.util.Objects;
 
 import static cc.ranmc.city.util.BasicUtil.say;
-import static cc.ranmc.city.util.BasicUtil.textReplace;
+import static cc.ranmc.city.util.BasicUtil.color;
 
 public class PlayerListener implements Listener {
 
@@ -43,11 +44,11 @@ public class PlayerListener implements Listener {
 
         // 玩家退出提示
         if (player.hasPermission("city.svip")) {
-            event.setQuitMessage(textReplace(Main.getInstance().getConfig().getString("QuitMessageSvip"), player));
+            event.setQuitMessage(color(Main.getInstance().getConfig().getString("QuitMessageSvip"), player));
         } else if (player.hasPermission("city.vip")) {
-            event.setQuitMessage(textReplace(Main.getInstance().getConfig().getString("QuitMessageVip"), player));
+            event.setQuitMessage(color(Main.getInstance().getConfig().getString("QuitMessageVip"), player));
         } else {
-            event.setQuitMessage(textReplace(Main.getInstance().getConfig().getString("QuitMessage"), player));
+            event.setQuitMessage(color(Main.getInstance().getConfig().getString("QuitMessage"), player));
         }
     }
 
@@ -75,7 +76,7 @@ public class PlayerListener implements Listener {
     @EventHandler
     public void onPlayerChatEvent(AsyncPlayerChatEvent event) {
         if (event.getPlayer().hasPermission("city.vip") && event.getMessage().length() <= 40) {
-            event.setMessage(textReplace(event.getMessage()));
+            event.setMessage(BasicUtil.color(event.getMessage()));
         }
     }
 
@@ -87,11 +88,11 @@ public class PlayerListener implements Listener {
 
         // 玩家进入提示
         if (player.hasPermission("city.svip")) {
-            event.setJoinMessage(textReplace(Main.getInstance().getConfig().getString("JoinMessageSvip"),player));
+            event.setJoinMessage(color(Main.getInstance().getConfig().getString("JoinMessageSvip"),player));
         } else if (player.hasPermission("city.vip")) {
-            event.setJoinMessage(textReplace(Main.getInstance().getConfig().getString("JoinMessageVip"),player));
+            event.setJoinMessage(color(Main.getInstance().getConfig().getString("JoinMessageVip"),player));
         } else {
-            event.setJoinMessage(textReplace(Main.getInstance().getConfig().getString("JoinMessage"),player));
+            event.setJoinMessage(color(Main.getInstance().getConfig().getString("JoinMessage"),player));
         }
 
         // 保存玩家IP地址
@@ -99,9 +100,9 @@ public class PlayerListener implements Listener {
 
         if (ipList.isEmpty()) {
             // 首次进入欢迎语
-            say(textReplace(Main.getInstance().getConfig().getString("FirstJoinMessage"),player));
+            say(color(Main.getInstance().getConfig().getString("FirstJoinMessage"),player));
             // 首次进入执行指令
-            Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), textReplace(Main.getInstance().getConfig().getString("RunCommandFirstJoin"), player));
+            Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), color(Main.getInstance().getConfig().getString("RunCommandFirstJoin"), player));
         }
 
         String address = Objects.requireNonNull(player.getAddress()).getHostString();

@@ -52,7 +52,8 @@ public class Main extends JavaPlugin implements Listener{
 		// 输出成功启动
 		Bukkit.getConsoleSender().sendMessage(textReplace("&b[夜城] &a插件已经成功加载 &dBy Ranica"));
 
-        Bukkit.getScheduler().runTaskTimer(this, TreasureUtil::generate,10 * 20, 10 * 20);
+        int delay = getConfig().getInt("treasure.time", 600) * 20;
+        Bukkit.getScheduler().runTaskTimer(this, TreasureUtil::generate, delay, delay);
 	}
 	
 	// 加载配置文件

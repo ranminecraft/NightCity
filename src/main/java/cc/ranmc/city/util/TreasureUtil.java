@@ -11,6 +11,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicReference;
@@ -50,8 +51,8 @@ public class TreasureUtil {
             block.setType(Material.DECORATED_POT);
             if (block.getState() instanceof DecoratedPot pot) {
                 pot.setSherd(DecoratedPot.Side.FRONT, Material.ARCHER_POTTERY_SHERD);
-                pot.getSnapshotInventory().addItem(new ItemStack(Material.DIAMOND));
-                pot.getSnapshotInventory().addItem(new ItemStack(Material.DIAMOND));
+                getTreasureItem().forEach(item ->
+                        pot.getSnapshotInventory().addItem(item));
                 pot.update();
             }
             print("宝藏最终生成位置" + BasicUtil.getLocation(location));
@@ -66,10 +67,29 @@ public class TreasureUtil {
         });
     }
 
+    private static List<ItemStack> getTreasureItem() {
+        List<ItemStack> list = new ArrayList<>();
+        ItemStack diamond = MoneyUtil.getMoney100Item();
+        diamond.setAmount(new Random().nextInt(3) + 1);
+        list.add(diamond);
+        if (Math.random() >= 0.5) {
+            ItemStack item = MoneyUtil.getMoney100Item();
+            item.setAmount(new Random().nextInt(10) + 1);
+            list.add(MoneyUtil.getMoney100Item());
+        }
+        if (Math.random() >= 0.1) {
+            list.add(CardUtil.getRandomCard());
+        }
+        if (Math.random() >= 0.05) {
+            list.add(MoneyUtil.getMoney1000Item());
+        }
+        return list;
+    }
+
     public static boolean showDistance(Player player) {
         String treasureWorldName = Main.getInstance().getConfig().getString("treasure.world", "zy");
         if (!treasureWorldName.equals(player.getWorld().getName())) {
-            player.sendMessage(textReplace("&b[夜城] &e当前世界没有宝藏，请前往资源世界"));
+            player.sendMessage(textReplace("&b[夜城] &c当前世界没有宝藏，请前往资源世界"));
             return false;
         }
         final double[] distance = {999999};
@@ -94,7 +114,7 @@ public class TreasureUtil {
             }
             return showDistance(player);
         }
-        player.sendMessage(textReplace("&b[夜城] &a找到宝藏距离你 " + distance[0] + "m"));
+        player.sendMessage(textReplace("&b[夜城] &a找到宝藏距离你 &e" + String.format("%,.0f", distance[0]) + "m"));
         return true;
     }
 

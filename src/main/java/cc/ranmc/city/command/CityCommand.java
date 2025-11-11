@@ -1,10 +1,12 @@
 package cc.ranmc.city.command;
 
 import cc.ranmc.city.Main;
+import cc.ranmc.city.util.MoneyUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -30,14 +32,14 @@ public class CityCommand implements CommandExecutor {
                 sender.sendMessage("§b[夜城] §a重载成功");
                 return true;
             }
-
+            // 存钱
+            if (args[0].equalsIgnoreCase("money") && sender instanceof Player player) {
+                MoneyUtil.openGUI(player);
+                return true;
+            }
         }
 
         if (args.length == 2) {
-            // 存钱
-            if (args[0].equalsIgnoreCase("money")) {
-
-            }
             // 获取玩家信息
             if (args[0].equalsIgnoreCase("info")) {
                 if (!sender.hasPermission("city.admin")) {

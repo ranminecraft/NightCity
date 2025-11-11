@@ -2,9 +2,16 @@ package cc.ranmc.city.util;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
 public class BasicUtil {
@@ -70,5 +77,49 @@ public class BasicUtil {
             location.setPitch(Float.parseFloat(date[5]));
         }
         return location;
+    }
+
+    /**
+     * 获取物品
+     */
+    public static ItemStack getItem(Material material, int count) {
+        return new ItemStack(material,count);
+    }
+
+    public static ItemStack getItem(Material material, int count, String name) {
+        ItemStack item = new ItemStack(material,count);
+        ItemMeta meta = item.getItemMeta();
+        Objects.requireNonNull(meta).setDisplayName(textReplace(name));
+        item.setItemMeta(meta);
+        return item;
+    }
+
+    public static ItemStack getItem(Material material, int count, String name, String... lore) {
+        return getItem(material, count, name, Arrays.asList(lore));
+    }
+
+    public static ItemStack getItem(Material material, int count, String name, List<String> lore) {
+        ItemStack item = new ItemStack(material,count);
+        ItemMeta meta = item.getItemMeta();
+        Objects.requireNonNull(meta).setDisplayName(textReplace(name));
+        List<String> newLore = new ArrayList<>();
+        lore.forEach(line -> newLore.add(textReplace(line)));
+        meta.setLore(newLore);
+        item.setItemMeta(meta);
+        return item;
+    }
+
+    public static boolean isInventoryFull(Player player) {
+        return isInventoryFull(player.getInventory());
+    }
+
+    public static boolean isInventoryFull(Inventory inventory) {
+        for(int i = 0; i < 36; ++i) {
+            if (inventory.getItem(i) == null) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }

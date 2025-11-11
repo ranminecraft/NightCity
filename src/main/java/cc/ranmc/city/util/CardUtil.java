@@ -12,16 +12,16 @@ public class CardUtil {
 
     private static final List<String> CARD_TYPE = List.of(
             "&a&lSSS",
-            "&b&lS", "&b&lS", "&b&lS",
-            "&e&lA", "&e&lA", "&e&lA", "&e&lA",
-            "&c&lB", "&c&lB", "&c&lB", "&c&lB", "&c&lB",
-            "&4&lC", "&4&lC", "&4&lC", "&4&lC", "&4&lC", "&4&lC");
+            "&b&lS", "&b&lS",
+            "&e&lA", "&e&lA", "&e&lA",
+            "&c&lB", "&c&lB", "&c&lB", "&c&lB",
+            "&4&lC", "&4&lC", "&4&lC", "&4&lC", "&4&lC");
 
     private static final List<String> CARD_STATUS = List.of(
             "&a&l全新",
-            "&b&l优秀", "&b&l优秀", "&b&l优秀",
-            "&e&l良好", "&e&l良好", "&e&l良好", "&e&l良好",
-            "&c&l差劲", "&c&l差劲", "&c&l差劲", "&c&l差劲", "&c&l差劲",
+            "&b&l优秀", "&b&l优秀",
+            "&e&l良好", "&e&l良好", "&e&l良好",
+            "&c&l差劲", "&c&l差劲", "&c&l差劲", "&c&l差劲",
             "&4&l损坏");
 
     public static ItemStack getRandomCard() {

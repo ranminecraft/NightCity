@@ -1,0 +1,98 @@
+package cc.ranmc.city.listener;
+
+import cc.ranmc.city.Main;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerLoginEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerSwapHandItemsEvent;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Objects;
+
+import static cc.ranmc.city.util.BasicUtil.say;
+import static cc.ranmc.city.util.BasicUtil.textReplace;
+
+public class PlayerListener implements Listener {
+
+    // 玩家退出事件
+    @EventHandler
+    public void onPlayerQuit(PlayerQuitEvent event) {
+        Player player = event.getPlayer();
+
+        // 玩家退出提示
+        if (player.hasPermission("city.svip")) {
+            event.setQuitMessage(textReplace(Main.getInstance().getConfig().getString("QuitMessageSvip"), player));
+        } else if (player.hasPermission("city.vip")) {
+            event.setQuitMessage(textReplace(Main.getInstance().getConfig().getString("QuitMessageVip"), player));
+        } else {
+            event.setQuitMessage(textReplace(Main.getInstance().getConfig().getString("QuitMessage"), player));
+        }
+    }
+
+    // SHIFT + F 指令
+    @EventHandler
+    public void onPlayerSwapHandItemsEvent(PlayerSwapHandItemsEvent event) {
+        Player player = event.getPlayer();
+
+        if (player.isSneaking() && player.hasPermission("city.shift")) {
+            player.chat("/cd");
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onPlayerLogin(PlayerLoginEvent event) {
+        if (event.getResult() == PlayerLoginEvent.Result.KICK_FULL) {
+            Player player = event.getPlayer();
+            if (player.hasPermission("city.vip")) {
+                event.allow();
+            }
+        }
+    }
+
+    @EventHandler
+    public void onPlayerChatEvent(AsyncPlayerChatEvent event) {
+        if (event.getPlayer().hasPermission("city.vip") && event.getMessage().length() <= 40) {
+            event.setMessage(textReplace(event.getMessage()));
+        }
+    }
+
+    // 玩家加入事件
+    @EventHandler
+    public void onPlayerJoin(PlayerJoinEvent event) {
+
+        Player player = event.getPlayer();
+
+        // 玩家进入提示
+        if (player.hasPermission("city.svip")) {
+            event.setJoinMessage(textReplace(Main.getInstance().getConfig().getString("JoinMessageSvip"),player));
+        } else if (player.hasPermission("city.vip")) {
+            event.setJoinMessage(textReplace(Main.getInstance().getConfig().getString("JoinMessageVip"),player));
+        } else {
+            event.setJoinMessage(textReplace(Main.getInstance().getConfig().getString("JoinMessage"),player));
+        }
+
+        // 保存玩家IP地址
+        List<String> ipList = Main.getInstance().getIpData().getStringList(player.getName());
+
+        if (ipList.isEmpty()) {
+            // 首次进入欢迎语
+            say(textReplace(Main.getInstance().getConfig().getString("FirstJoinMessage"),player));
+            // 首次进入执行指令
+            Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), textReplace(Main.getInstance().getConfig().getString("RunCommandFirstJoin"), player));
+        }
+
+        String address = Objects.requireNonNull(player.getAddress()).getHostString();
+        if (!ipList.contains(address)) ipList.add(address);
+        Main.getInstance().getIpData().set(player.getName(), ipList);
+        try {
+            Main.getInstance().getIpData().save(Main.getInstance().getIpYml());
+        } catch (IOException ignored) {}
+    }
+}

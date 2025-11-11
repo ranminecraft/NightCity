@@ -28,10 +28,6 @@ permissions:
     default: false
     description: 'SVIP only'
 
-  city.kit:
-    default: true
-    description: 'kit command'
-
   city.shift:
     default: true
     description: 'kit command'
@@ -39,8 +35,4 @@ permissions:
 commands:
   city:
     description: city
-    usage: /<command>
-
-  kit:
-    description: kit
     usage: /<command>

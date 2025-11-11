@@ -103,6 +103,7 @@ public class PlayerListener implements Listener {
             say(color(Main.getInstance().getConfig().getString("FirstJoinMessage"),player));
             // 首次进入执行指令
             Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), color(Main.getInstance().getConfig().getString("RunCommandFirstJoin"), player));
+            Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), "eco give " + player.getName() + " 200");
         }
 
         String address = Objects.requireNonNull(player.getAddress()).getHostString();

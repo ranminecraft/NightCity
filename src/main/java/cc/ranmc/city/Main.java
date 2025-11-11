@@ -51,35 +51,35 @@ public class Main extends JavaPlugin implements Listener{
                 MoneyUtil.getMoneyItem(100),
                 Material.MUSIC_DISC_STAL,
                 0.0f,
-                60 * 20
+                70 * 20
         );
         FurnaceRecipe coinRecipe200 = new FurnaceRecipe(
                 new NamespacedKey(this, "city_coin_200"),
                 MoneyUtil.getMoneyItem(200),
                 Material.MUSIC_DISC_PRECIPICE,
                 0.0f,
-                50 * 20
+                60 * 20
         );
         FurnaceRecipe coinRecipe300 = new FurnaceRecipe(
                 new NamespacedKey(this, "city_coin_300"),
                 MoneyUtil.getMoneyItem(300),
                 Material.MUSIC_DISC_RELIC,
                 0.0f,
-                40 * 20
+                50 * 20
         );
         FurnaceRecipe coinRecipe500 = new FurnaceRecipe(
                 new NamespacedKey(this, "city_coin_400"),
                 MoneyUtil.getMoneyItem(400),
                 Material.MUSIC_DISC_CREATOR_MUSIC_BOX,
                 0.0f,
-                30 * 20
+                40 * 20
         );
         FurnaceRecipe coinRecipe1000 = new FurnaceRecipe(
                 new NamespacedKey(this, "city_coin_500"),
                 MoneyUtil.getMoneyItem(500),
                 Material.MUSIC_DISC_TEARS,
                 0.0f,
-                20 * 20
+                30 * 20
         );
         Bukkit.addRecipe(coinRecipe100);
         Bukkit.addRecipe(coinRecipe200);

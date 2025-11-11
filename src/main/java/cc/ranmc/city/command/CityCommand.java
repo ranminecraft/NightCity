@@ -4,6 +4,7 @@ import cc.ranmc.city.Main;
 import cc.ranmc.city.util.BasicUtil;
 import cc.ranmc.city.util.CardUtil;
 import cc.ranmc.city.util.MoneyUtil;
+import cc.ranmc.city.util.TreasureUtil;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -31,8 +32,6 @@ public class CityCommand implements CommandExecutor {
                 }
                 Main.getInstance().loadConfig();
                 sender.sendMessage("§b[夜城] §a重载成功");
-
-                ((Player)sender).getInventory().addItem(CardUtil.getRandomCard());
 
                 return true;
             }

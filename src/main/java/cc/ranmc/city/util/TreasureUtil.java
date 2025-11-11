@@ -4,11 +4,13 @@ import cc.ranmc.city.Main;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.DecoratedPot;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.persistence.PersistentDataType;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -17,7 +19,6 @@ import java.util.Random;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static cc.ranmc.city.util.BasicUtil.print;
-import static cc.ranmc.city.util.BasicUtil.color;
 
 public class TreasureUtil {
 
@@ -33,7 +34,6 @@ public class TreasureUtil {
         }
         List<String> worldList = Main.getInstance().getTreasureData().getStringList(world.getName());
         if (worldList.size() > Main.getInstance().getConfig().getInt("treasure.max", 5)) {
-            print("生成宝藏已满");
             return;
         }
 
@@ -51,8 +51,7 @@ public class TreasureUtil {
             block.setType(Material.DECORATED_POT);
             if (block.getState() instanceof DecoratedPot pot) {
                 pot.setSherd(DecoratedPot.Side.FRONT, Material.ARCHER_POTTERY_SHERD);
-                getTreasureItem().forEach(item ->
-                        pot.getSnapshotInventory().addItem(item));
+                pot.getSnapshotInventory().addItem(getTreasureItem());
                 pot.update();
             }
             print("宝藏最终生成位置" + BasicUtil.getLocation(location));
@@ -67,29 +66,23 @@ public class TreasureUtil {
         });
     }
 
-    private static List<ItemStack> getTreasureItem() {
-        List<ItemStack> list = new ArrayList<>();
-        ItemStack diamond = new ItemStack(Material.DIAMOND);
-        diamond.setAmount(new Random().nextInt(3) + 1);
-        list.add(diamond);
-        if (Math.random() < 0.4) {
+    public static ItemStack getTreasureItem() {
+        double random = Math.random();
+        if (random < 0.1) {
+            return MoneyUtil.getMoneyItem(500);
+        } else if (random < 0.2) {
+            return MoneyUtil.getMoneyItem(1000);
+        } else if (random < 0.4) {
             ItemStack item = MoneyUtil.getMoneyItem(100);
             item.setAmount(new Random().nextInt(10) + 1);
-            list.add(item);
+            return item;
+        } else if (random < 0.8) {
+            return CardUtil.getRandomCard();
+        } else {
+            ItemStack diamond = new ItemStack(Material.DIAMOND);
+            diamond.setAmount(new Random().nextInt(10) + 1);
+            return diamond;
         }
-        if (Math.random() < 0.3) {
-            list.add(CardUtil.getRandomCard());
-        }
-        if (Math.random() < 0.1) {
-            list.add(MoneyUtil.getMoneyItem(500));
-        }
-        if (Math.random() < 0.1) {
-            list.add(MoneyUtil.getMoneyItem(200));
-        }
-        if (Math.random() < 0.1) {
-            list.add(MoneyUtil.getMoneyItem(1000));
-        }
-        return list;
     }
 
     public static boolean showDistance(Player player) {

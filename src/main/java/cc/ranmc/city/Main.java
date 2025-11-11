@@ -107,7 +107,10 @@ public class Main extends JavaPlugin implements Listener{
 	// 加载配置文件
 	public void loadConfig() {
 		// 检查配置文件
-		reloadConfig();
+        if (!new File(getDataFolder() + File.separator + "config.yml").exists()) {
+            saveDefaultConfig();
+        }
+        reloadConfig();
 		
 		// 加载 IP 地址
 		ipYml = new File(getDataFolder(), "ip.yml");

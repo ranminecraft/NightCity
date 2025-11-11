@@ -70,16 +70,16 @@ public class TreasureUtil {
             return MoneyUtil.getMoneyItem(500);
         } else if (random < 0.2) {
             return MoneyUtil.getMoneyItem(1000);
-        } else if (random < 0.4) {
+        } else if (random < 0.3) {
             ItemStack item = MoneyUtil.getMoneyItem(100);
             item.setAmount(new Random().nextInt(10) + 1);
             return item;
-        } else if (random < 0.8) {
-            return CardUtil.getRandomCard();
-        } else {
+        } else if (random < 0.4) {
             ItemStack diamond = new ItemStack(Material.DIAMOND);
-            diamond.setAmount(new Random().nextInt(10) + 1);
+            diamond.setAmount(new Random().nextInt(32) + 1);
             return diamond;
+        } else {
+            return CardUtil.getRandomCard();
         }
     }
 

@@ -4,16 +4,13 @@ import cc.ranmc.city.Main;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.DecoratedPot;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.persistence.PersistentDataType;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicReference;
@@ -24,12 +21,12 @@ public class TreasureUtil {
 
     public static void generate() {
         if (Math.random() >= Main.getInstance().getConfig().getDouble("treasure.random", 0.5)) {
-            print("本次不生成宝藏");
+            //print("本次不生成宝藏");
             return;
         }
         World world = Bukkit.getWorld(Main.getInstance().getConfig().getString("treasure.world", "zy"));
         if (world == null) {
-            print("生成宝藏的世界为空");
+            //print("生成宝藏的世界为空");
             return;
         }
         List<String> worldList = Main.getInstance().getTreasureData().getStringList(world.getName());

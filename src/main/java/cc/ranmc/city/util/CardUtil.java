@@ -37,7 +37,7 @@ public class CardUtil {
     }
 
     public static Material getMaterial(String type, String status) {
-        if (ChatColor.stripColor(status).equalsIgnoreCase("损坏")) return Material.MUSIC_DISC_11;
+        if (status.contains("损坏")) return Material.MUSIC_DISC_11;
         return switch (ChatColor.stripColor(type)) {
             case "SSS" -> Material.MUSIC_DISC_TEARS;
             case "S" -> Material.MUSIC_DISC_CREATOR_MUSIC_BOX;
@@ -53,9 +53,9 @@ public class CardUtil {
         ItemMeta meta = item.getItemMeta();
         List<String> lore = meta.getLore();
         if (lore == null || lore.isEmpty()) return "";
-        if (lore.size() < 2) return "";
-        String line = lore.get(1);
-        if (!line.startsWith("型号: ")) return "";
+        if (lore.size() != 2) return "";
+        String line = lore.getFirst();
+        if (!line.contains("型号: ")) return "";
         return line.split(" ")[1];
     }
 
@@ -64,9 +64,9 @@ public class CardUtil {
         ItemMeta meta = item.getItemMeta();
         List<String> lore = meta.getLore();
         if (lore == null || lore.isEmpty()) return "";
-        if (lore.size() < 3) return "";
-        String line = ChatColor.stripColor(lore.get(2));
-        if (!line.startsWith("成色: ")) return "";
+        if (lore.size() != 2) return "";
+        String line = lore.get(1);
+        if (!line.contains("成色: ")) return "";
         return line.split(" ")[1];
     }
 

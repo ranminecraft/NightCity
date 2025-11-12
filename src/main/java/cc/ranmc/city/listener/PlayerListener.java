@@ -3,6 +3,8 @@ package cc.ranmc.city.listener;
 import cc.ranmc.city.Main;
 import cc.ranmc.city.util.BasicUtil;
 import cc.ranmc.city.util.TreasureUtil;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.event.ClickEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -22,6 +24,8 @@ import java.util.Objects;
 
 import static cc.ranmc.city.util.BasicUtil.say;
 import static cc.ranmc.city.util.BasicUtil.color;
+import static org.bukkit.event.block.Action.RIGHT_CLICK_AIR;
+import static org.bukkit.event.block.Action.RIGHT_CLICK_BLOCK;
 
 public class PlayerListener implements Listener {
 
@@ -30,9 +34,11 @@ public class PlayerListener implements Listener {
         Player player = event.getPlayer();
         ItemStack item = event.getItem();
         if (item == null) return;
-        if (item.getType() == Material.DIAMOND) {
-            if (TreasureUtil.showDistance(player)) {
-                item.setAmount(item.getAmount() - 1);
+        if (event.getAction() == RIGHT_CLICK_AIR || event.getAction() == RIGHT_CLICK_BLOCK) {
+            if (item.getType() == Material.DIAMOND) {
+                if (TreasureUtil.showDistance(player)) {
+                    item.setAmount(item.getAmount() - 1);
+                }
             }
         }
     }
@@ -104,6 +110,12 @@ public class PlayerListener implements Listener {
             // 首次进入执行指令
             Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), color(Main.getInstance().getConfig().getString("RunCommandFirstJoin"), player));
             Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), "eco give " + player.getName() + " 500");
+            Component welcome = Component.text(color("&a[点击欢迎]"))
+                    .hoverEvent(Component.text("点击欢迎" + player.getName()))
+                    .clickEvent(ClickEvent.clickEvent(ClickEvent.Action.SUGGEST_COMMAND, "欢迎 " + player.getName() + "~"));
+            for (Player p : Bukkit.getOnlinePlayers()) {
+                if (p != player) p.sendMessage(welcome);
+            }
         }
 
         String address = Objects.requireNonNull(player.getAddress()).getHostString();

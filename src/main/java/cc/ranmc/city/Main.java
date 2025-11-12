@@ -25,7 +25,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 import net.milkbowl.vault.economy.Economy;
 
 import static cc.ranmc.city.util.BasicUtil.print;
-import static cc.ranmc.city.util.BasicUtil.color;
 
 public class Main extends JavaPlugin implements Listener{
 

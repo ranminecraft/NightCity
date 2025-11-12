@@ -13,7 +13,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.util.Objects;
 
 import static cc.ranmc.city.util.BasicUtil.returnItem;
-import static cc.ranmc.city.util.BasicUtil.color;
 
 public class MoneyUtil {
 

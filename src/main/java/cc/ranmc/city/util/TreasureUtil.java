@@ -119,7 +119,7 @@ public class TreasureUtil {
         }
         Vector toTreasure = location.get().toVector().subtract(playerLocation.toVector());
         player.sendMessage(BasicUtil.color("&b[夜城] &a宝藏距离你 &e" +
-                String.format("%,.0f", distance[0]) + "m &a方向: &e" + getDirection(player, toTreasure)));
+                String.format("%,.0f", distance[0]) + "m &a方向 &e" + getDirection(player, toTreasure)));
         return true;
     }
 

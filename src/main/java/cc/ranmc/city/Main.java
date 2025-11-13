@@ -5,6 +5,7 @@ import java.util.Objects;
 
 import cc.ranmc.city.command.CityCommand;
 import cc.ranmc.city.command.CityTabComplete;
+import cc.ranmc.city.command.GameModeCommand;
 import cc.ranmc.city.listener.BlockListener;
 import cc.ranmc.city.listener.FurnaceListener;
 import cc.ranmc.city.listener.GUIListener;
@@ -92,6 +93,7 @@ public class Main extends JavaPlugin implements Listener{
         PluginCommand cityCommand = Objects.requireNonNull(Bukkit.getPluginCommand("city"));
         cityCommand.setExecutor(new CityCommand());
         cityCommand.setTabCompleter(new CityTabComplete());
+        Objects.requireNonNull(Bukkit.getPluginCommand("g")).setExecutor(new GameModeCommand());
 
 		// 加载配置文件
 		loadConfig();

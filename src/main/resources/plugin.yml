@@ -29,6 +29,10 @@ permissions:
     description: 'kit command'
 
 commands:
+  g:
+    description: g
+    usage: /<command>
+
   city:
     description: city
     usage: /<command>

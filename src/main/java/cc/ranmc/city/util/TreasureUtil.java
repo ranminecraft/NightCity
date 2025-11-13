@@ -72,7 +72,7 @@ public class TreasureUtil {
             return MoneyUtil.getMoneyItem(1000);
         } else if (random < 0.03) {
             ItemStack item = MoneyUtil.getMoneyItem(100);
-            item.setAmount(new Random().nextInt(10) + 1);
+            item.setAmount(new Random().nextInt(32) + 1);
             return item;
         } else if (random < 0.04) {
             ItemStack diamond = new ItemStack(Material.DIAMOND);

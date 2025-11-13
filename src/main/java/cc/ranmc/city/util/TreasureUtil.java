@@ -9,6 +9,8 @@ import org.bukkit.block.Block;
 import org.bukkit.block.DecoratedPot;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.util.Vector;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.util.List;
@@ -89,19 +91,23 @@ public class TreasureUtil {
             player.sendMessage(BasicUtil.color("&b[夜城] &c当前世界没有宝藏，请前往资源世界"));
             return false;
         }
-        final double[] distance = {999999};
         Location playerLocation = player.getLocation();
         List<String> worldList = Main.getInstance().getTreasureData().getStringList(treasureWorldName);
         if (worldList.isEmpty()) {
             player.sendMessage(BasicUtil.color("&b[夜城] &e宝藏已经全部找完了，请稍后再来吧"));
             return false;
         }
-        AtomicReference<Location> location = new AtomicReference<>(player.getLocation());
+        final double[] distance = {999999};
+        AtomicReference<Location> location = new AtomicReference<>();
         worldList.forEach(locStr -> {
-            location.set(BasicUtil.getLocation(locStr));
-            distance[0] = Math.min(playerLocation.distance(location.get()), distance[0]);
+            Location targetLoc = BasicUtil.getLocation(locStr);
+            double newDistance = playerLocation.distance(targetLoc);
+            if (distance[0] > newDistance) {
+                distance[0] = newDistance;
+                location.set(targetLoc);
+            }
         });
-        if (Material.DECORATED_POT != location.get().getBlock().getType()) {
+        if (location.get() == null || Material.DECORATED_POT != location.get().getBlock().getType()) {
             worldList.remove(BasicUtil.getLocation(location.get()));
             Main.getInstance().getTreasureData().set(treasureWorldName, worldList);
             try {
@@ -111,8 +117,26 @@ public class TreasureUtil {
             }
             return showDistance(player);
         }
-        player.sendMessage(BasicUtil.color("&b[夜城] &a找到宝藏距离你 &e" + String.format("%,.0f", distance[0]) + "m"));
+        Vector toTreasure = location.get().toVector().subtract(playerLocation.toVector());
+        player.sendMessage(BasicUtil.color("&b[夜城] &a宝藏距离你 &e" +
+                String.format("%,.0f", distance[0]) + "m &a方向: &e" + getDirection(player, toTreasure)));
         return true;
+    }
+
+    private static String getDirection(Player player, Vector toTreasure) {
+        double angleToTreasure = Math.toDegrees(Math.atan2(-toTreasure.getX(), toTreasure.getZ()));
+        double playerYaw = player.getLocation().getYaw();
+        double relative = (angleToTreasure - playerYaw + 360) % 360;
+        String direction;
+        if (relative < 22.5 || relative >= 337.5) direction = "↑";
+        else if (relative < 67.5) direction = "↗";
+        else if (relative < 112.5) direction = "→";
+        else if (relative < 157.5) direction = "↘";
+        else if (relative < 202.5) direction = "↓";
+        else if (relative < 247.5) direction = "↙";
+        else if (relative < 292.5) direction = "←";
+        else direction = "↖";
+        return direction;
     }
 
     public static void blockBreak(Block block) {

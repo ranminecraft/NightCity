@@ -31,8 +31,7 @@ public class CardUtil {
             BEST,
             GOOD, GOOD,
             FINE, FINE, FINE,
-            BAD, BAD, BAD, BAD,
-            BROKEN);
+            BAD, BAD, BAD, BAD);
 
     public static ItemStack getRandomCard() {
         return getCard(CARD_TYPE.get(new Random().nextInt(CARD_TYPE.size())),

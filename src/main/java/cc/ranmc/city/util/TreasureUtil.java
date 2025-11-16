@@ -119,8 +119,15 @@ public class TreasureUtil {
         }
         Vector toTreasure = location.get().toVector().subtract(playerLocation.toVector());
         player.sendMessage(BasicUtil.color("&b[夜城] &a宝藏距离你 &e" +
-                String.format("%,.0f", distance[0]) + "m &a方向 &e&l" + getDirection(player, toTreasure)));
+                roundToHighest((int) distance[0]) + "m内 &a方向 &e&l" + getDirection(player, toTreasure)));
         return true;
+    }
+
+    public static int roundToHighest(int n) {
+        int len = String.valueOf(n).length();
+        int pow = (int) Math.pow(10, len - 1);
+        int head = (int) Math.round(n / (double) pow);
+        return head * pow;
     }
 
     private static String getDirection(Player player, Vector toTreasure) {

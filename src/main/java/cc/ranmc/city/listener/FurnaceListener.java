@@ -31,17 +31,17 @@ public class FurnaceListener implements Listener {
          switch (status) {
             case BEST -> status = GOOD;
             case GOOD -> {
-                if (Math.random() < 0.1) {
+                if (Math.random() < 0.02) {
                     status = FINE;
                 }
             }
             case FINE -> {
-                if (Math.random() < 0.2) {
+                if (Math.random() < 0.04) {
                     status = BAD;
                 }
             }
             case BAD -> {
-                if (Math.random() < 0.3) {
+                if (Math.random() < 0.08) {
                     status = BROKEN;
                 }
             }

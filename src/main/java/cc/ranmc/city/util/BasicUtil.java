@@ -135,7 +135,7 @@ public class BasicUtil {
     }
 
     public static boolean checkPlugin(String pluginName) {
-        if (Bukkit.getPluginManager().getPlugin("pluginName") != null) {
+        if (Bukkit.getPluginManager().getPlugin(pluginName) != null) {
             print("§b[夜城] §a成功加载" + pluginName + "插件");
             return true;
         } else {

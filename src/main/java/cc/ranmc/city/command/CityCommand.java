@@ -13,6 +13,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
+import static cc.ranmc.city.util.BasicUtil.print;
 import static cc.ranmc.city.util.VipUtil.durationToDays;
 
 public class CityCommand implements CommandExecutor {
@@ -80,7 +81,7 @@ public class CityCommand implements CommandExecutor {
                 plus += durationToDays(PlaceholderAPI.setPlaceholders(target, "%luckperms_group_expiry_time_vip%"));
                 BasicUtil.run("lp user " + target.getName() + " parent removetemp vip");
                 BasicUtil.run("lp user " + target.getName() + " parent addtemp vip " + plus + "d");
-                sender.sendMessage("§b[夜城] §c玩家" + target.getName() + "会员时间已更新至" + plus + "天");
+                print("§b[夜城] §c玩家" + target.getName() + "会员时间已更新至" + plus + "天");
                 return true;
             }
         }

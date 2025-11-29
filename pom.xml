@@ -27,6 +27,10 @@
             <id>placeholderapi</id>
             <url>https://repo.extendedclip.com/content/repositories/placeholderapi/</url>
         </repository>
+        <repository>
+            <id>viaversion-repo</id>
+            <url>https://repo.viaversion.com</url>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -63,6 +67,21 @@
             <artifactId>placeholderapi</artifactId>
             <version>2.11.7</version>
             <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.viaversion</groupId>
+            <artifactId>viaversion-api</artifactId>
+            <version>[5.0.0,6.0.0)</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>cc.baka9.catseedlogin</groupId>
+            <artifactId>CatSeedLogin</artifactId>
+            <version>1.4.1-SNAPSHOT</version>
+            <scope>system</scope>
+            <systemPath>/users/rain/desktop/Project/CatSeedLogin-1.4.1-SNAPSHOT.jar</systemPath>
         </dependency>
 
         <!--<dependency>

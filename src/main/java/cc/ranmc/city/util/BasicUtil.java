@@ -1,5 +1,7 @@
 package cc.ranmc.city.util;
 
+import cc.ranmc.city.Main;
+import cc.ranmc.city.papi.Papi;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -130,5 +132,22 @@ public class BasicUtil {
             player.getInventory().addItem(item);
             player.sendMessage(color("&c请勿放入非现金,已返还背包"));
         }
+    }
+
+    public static boolean checkPlugin(String pluginName) {
+        if (Bukkit.getPluginManager().getPlugin("pluginName") != null) {
+            print("§b[夜城] §a成功加载" + pluginName + "插件");
+            return true;
+        } else {
+            print("§b[夜城] §c无法找到" + pluginName + "插件,部分功能受限");
+            return false;
+        }
+    }
+
+    /**
+     * 执行指令
+     */
+    public static void run(String command) {
+        Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(Main.getInstance(), () -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command));
     }
 }

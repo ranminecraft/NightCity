@@ -1,5 +1,6 @@
 package cc.ranmc.city.listener;
 
+import cc.baka9.catseedlogin.bukkit.CatSeedLoginAPI;
 import cc.ranmc.city.Main;
 import cc.ranmc.city.util.BasicUtil;
 import cc.ranmc.city.util.TreasureUtil;
@@ -11,6 +12,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
@@ -24,6 +26,7 @@ import java.util.Objects;
 
 import static cc.ranmc.city.util.BasicUtil.say;
 import static cc.ranmc.city.util.BasicUtil.color;
+import static cc.ranmc.city.util.LoginUtil.sendDialog;
 import static org.bukkit.event.block.Action.RIGHT_CLICK_AIR;
 import static org.bukkit.event.block.Action.RIGHT_CLICK_BLOCK;
 
@@ -124,5 +127,19 @@ public class PlayerListener implements Listener {
         try {
             Main.getInstance().getIpData().save(Main.getInstance().getIpYml());
         } catch (IOException ignored) {}
+
+        sendDialog(player);
+    }
+
+    @EventHandler
+    public void onPlayerCommandPreprocessEvent(PlayerCommandPreprocessEvent event) {
+        Player player = event.getPlayer();
+        Bukkit.getScheduler().runTaskLater(Main.getInstance(), () -> {
+            if (CatSeedLoginAPI.isLogin(player.getName())) {
+                player.closeDialog();
+            } else {
+                sendDialog(player);
+            }
+        }, 20);
     }
 }

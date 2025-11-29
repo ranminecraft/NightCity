@@ -2,9 +2,9 @@ package cc.ranmc.city.command;
 
 import cc.ranmc.city.Main;
 import cc.ranmc.city.util.BasicUtil;
-import cc.ranmc.city.util.CardUtil;
 import cc.ranmc.city.util.MoneyUtil;
-import cc.ranmc.city.util.TreasureUtil;
+import me.clip.placeholderapi.PlaceholderAPI;
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -13,7 +13,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-import static cc.ranmc.city.util.BasicUtil.color;
+import static cc.ranmc.city.util.VipUtil.durationToDays;
 
 public class CityCommand implements CommandExecutor {
 
@@ -61,8 +61,32 @@ public class CityCommand implements CommandExecutor {
                 return true;
             }
         }
+
+        if (args.length == 3) {
+            if (args[0].equalsIgnoreCase("vip")) {
+                if (!sender.hasPermission("city.admin")) {
+                    sender.sendMessage("§b[夜城] §c你没有足够的权限执行");
+                    return true;
+                }
+                Player target = Bukkit.getPlayer(args[1]);
+                if (target == null) {
+                    sender.sendMessage("§b[夜城] §c该玩家不在线");
+                    return true;
+                }
+                int plus = 30;
+                try {
+                    plus = Integer.parseInt(args[2]);
+                } catch (NumberFormatException ignored) {}
+                plus += durationToDays(PlaceholderAPI.setPlaceholders(target, "%luckperms_group_expiry_time_vip%"));
+                BasicUtil.run("lp user " + target.getName() + " parent removetemp vip");
+                BasicUtil.run("lp user " + target.getName() + " parent addtemp vip " + plus + "d");
+                sender.sendMessage("§b[夜城] §c玩家" + target.getName() + "会员时间已更新至" + plus + "天");
+                return true;
+            }
+        }
         sender.sendMessage("§b[夜城] §c未知指令,请检查后重新输入");
         return true;
 
     }
+
 }

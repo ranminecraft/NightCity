@@ -42,9 +42,7 @@ public class Papi extends PlaceholderExpansion {
 
         if (identifier.equals("viptime")) {
             Player onlinePlayer = (Player) player;
-            if (onlinePlayer.hasPermission("city.svip")) {
-                return "永久";
-            }
+            if (onlinePlayer.hasPermission("city.svip")) return "永久";
             if (onlinePlayer.hasPermission("city.vip")) {
                 return PlaceholderAPI.setPlaceholders(player, "%luckperms_group_expiry_time_vip%")
                         .replace("y ", "年")
@@ -58,6 +56,6 @@ public class Papi extends PlaceholderExpansion {
             return "未开通";
         }
 
-        return "&c暂无";
+        return "暂无";
     }
 }

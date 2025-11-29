@@ -26,6 +26,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import net.milkbowl.vault.economy.Economy;
 
+import static cc.ranmc.city.util.BasicUtil.checkPlugin;
 import static cc.ranmc.city.util.BasicUtil.print;
 
 public class Main extends JavaPlugin implements Listener{
@@ -133,19 +134,14 @@ public class Main extends JavaPlugin implements Listener{
         }
 
         // 插件
-        if (Bukkit.getPluginManager().isPluginEnabled("Vault")) {
+        if (checkPlugin("Vault")) {
             econ = Objects.requireNonNull(getServer().getServicesManager().getRegistration(Economy.class)).getProvider();
-            print("§b[夜城] §a成功加载Vault插件");
-        } else {
-            print("§b[夜城] §c无法找到Vault插件,部分功能受限");
         }
-
-        if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
+        if (checkPlugin("PlaceholderAPI")) {
             new Papi().register();
-            print("§b[夜城] §a成功加载PlaceholderAPI插件");
-        } else {
-            print("§b[夜城] §c无法找到PlaceholderAPI插件,部分功能受限");
         }
+        checkPlugin("CatSeedLogin");
+        checkPlugin("ViaVersion");
 	}
 	
 }

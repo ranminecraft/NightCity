@@ -81,7 +81,7 @@ public class CityCommand implements CommandExecutor {
                 plus += durationToDays(PlaceholderAPI.setPlaceholders(target, "%luckperms_group_expiry_time_vip%"));
                 BasicUtil.run("lp user " + target.getName() + " parent removetemp vip");
                 BasicUtil.run("lp user " + target.getName() + " parent addtemp vip " + plus + "d");
-                print("§b[夜城] §c玩家" + target.getName() + "会员时间已更新至" + plus + "天");
+                print("§b[夜城] §a玩家" + target.getName() + "会员时间已更新至" + plus + "天");
                 return true;
             }
         }

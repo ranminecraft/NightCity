@@ -10,6 +10,7 @@ import cc.ranmc.city.listener.BlockListener;
 import cc.ranmc.city.listener.FurnaceListener;
 import cc.ranmc.city.listener.GUIListener;
 import cc.ranmc.city.listener.PlayerListener;
+import cc.ranmc.city.papi.Papi;
 import cc.ranmc.city.util.BasicUtil;
 import cc.ranmc.city.util.MoneyUtil;
 import cc.ranmc.city.util.TreasureUtil;
@@ -129,6 +130,21 @@ public class Main extends JavaPlugin implements Listener{
             print("§b[夜城] §a成功加载Vault插件");
         } else {
             print("§b[夜城] §c无法找到Vault插件,部分功能受限");
+        }
+
+        // 插件
+        if (Bukkit.getPluginManager().isPluginEnabled("Vault")) {
+            econ = Objects.requireNonNull(getServer().getServicesManager().getRegistration(Economy.class)).getProvider();
+            print("§b[夜城] §a成功加载Vault插件");
+        } else {
+            print("§b[夜城] §c无法找到Vault插件,部分功能受限");
+        }
+
+        if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
+            new Papi().register();
+            print("§b[夜城] §a成功加载PlaceholderAPI插件");
+        } else {
+            print("§b[夜城] §c无法找到PlaceholderAPI插件,部分功能受限");
         }
 	}
 	

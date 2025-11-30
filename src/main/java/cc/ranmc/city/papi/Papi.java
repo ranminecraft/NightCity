@@ -46,7 +46,7 @@ public class Papi extends PlaceholderExpansion {
             if (onlinePlayer.hasPermission("city.vip")) {
                 return PlaceholderAPI.setPlaceholders(player, "%luckperms_group_expiry_time_vip%")
                         .replace("y ", "年")
-                        .replace("mo ", "周")
+                        .replace("mo ", "月")
                         .replace("w ", "周")
                         .replace("d ", "日")
                         .replace("h ", "时")

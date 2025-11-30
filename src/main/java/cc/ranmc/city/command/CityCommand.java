@@ -13,7 +13,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-import static cc.ranmc.city.util.BasicUtil.print;
 import static cc.ranmc.city.util.VipUtil.durationToDays;
 
 public class CityCommand implements CommandExecutor {

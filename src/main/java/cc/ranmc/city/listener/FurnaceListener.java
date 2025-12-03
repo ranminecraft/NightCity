@@ -54,10 +54,10 @@ public class FurnaceListener implements Listener {
             if (smelting == null || smelting.getType() == Material.AIR) {
                 furnace.getSnapshotInventory().setSmelting(CardUtil.getCard(type, finalStatus));
                 furnace.update();
-            } else {
+            }/* else {
                 event.getBlock().getWorld().dropItem(event.getBlock().getLocation(),
                         CardUtil.getCard(type, finalStatus));
-            }
+            }*/
         });
     }
 }

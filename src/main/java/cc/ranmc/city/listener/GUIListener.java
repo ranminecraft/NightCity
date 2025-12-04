@@ -54,7 +54,6 @@ public class GUIListener implements Listener {
             }
             if (event.getRawSlot() == 49) {
                 MoneyUtil.save(player, inventory);
-                player.closeInventory();
                 return;
             }
             if (event.getRawSlot() == 53) {

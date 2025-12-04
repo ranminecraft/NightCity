@@ -75,10 +75,10 @@ public class MoneyUtil {
             if (item == null) continue;
             if (MoneyUtil.isMoney(item)) {
                 money += MoneyUtil.countMoney(item);
-                inventory.setItem(i, new ItemStack(Material.AIR));
             } else {
                 returnItem(player, item);
             }
+            inventory.setItem(i, new ItemStack(Material.AIR));
         }
         Main.getInstance().getEcon().depositPlayer(player, money);
         player.sendMessage(BasicUtil.color("&a夜城币 " + money + " 已经存入你的账户"));

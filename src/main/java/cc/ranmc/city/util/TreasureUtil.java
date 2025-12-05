@@ -10,7 +10,6 @@ import org.bukkit.block.DecoratedPot;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
-import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.util.List;
@@ -20,6 +19,8 @@ import java.util.concurrent.atomic.AtomicReference;
 import static cc.ranmc.city.util.BasicUtil.print;
 
 public class TreasureUtil {
+
+    private static final List<Material> AVOID_MATERIAL_LIST = List.of(Material.LAVA, Material.WATER, Material.KELP, Material.KELP_PLANT);
 
     public static void generate() {
         if (Math.random() >= Main.getInstance().getConfig().getDouble("treasure.random", 0.5)) {
@@ -46,7 +47,7 @@ public class TreasureUtil {
         int finalZ = z;
         world.getChunkAtAsync(new Location(world, x, 0, z)).thenAccept(_ -> {
             Block block = world.getHighestBlockAt(finalX, finalZ);
-            if (block.getType() == Material.WATER) return;
+            if (AVOID_MATERIAL_LIST.contains(block.getType())) return;
             Location location = block.getLocation();
             block.setType(Material.DECORATED_POT);
             if (block.getState() instanceof DecoratedPot pot) {

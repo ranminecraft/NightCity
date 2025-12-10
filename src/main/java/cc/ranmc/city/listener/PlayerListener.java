@@ -107,20 +107,6 @@ public class PlayerListener implements Listener {
         // 保存玩家IP地址
         List<String> ipList = Main.getInstance().getIpData().getStringList(player.getName());
 
-        if (ipList.isEmpty()) {
-            // 首次进入欢迎语
-            say(color(Main.getInstance().getConfig().getString("FirstJoinMessage"),player));
-            // 首次进入执行指令
-            Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), color(Main.getInstance().getConfig().getString("RunCommandFirstJoin"), player));
-            Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), "eco give " + player.getName() + " 500");
-            Component welcome = Component.text(color("&a[点击欢迎]"))
-                    .hoverEvent(Component.text("点击欢迎" + player.getName()))
-                    .clickEvent(ClickEvent.clickEvent(ClickEvent.Action.SUGGEST_COMMAND, "欢迎 " + player.getName() + "~"));
-            for (Player p : Bukkit.getOnlinePlayers()) {
-                if (p != player) p.sendMessage(welcome);
-            }
-        }
-
         String address = Objects.requireNonNull(player.getAddress()).getHostString();
         if (!ipList.contains(address)) ipList.add(address);
         Main.getInstance().getIpData().set(player.getName(), ipList);
